@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPSearchOpportunitiesParams,
@@ -22,8 +23,8 @@ import {
  * Opportunity Tools Class
  * Implements MCP tools for opportunity management
  */
-export class OpportunityTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class OpportunityTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all opportunity tool definitions for MCP server
@@ -329,7 +330,7 @@ export class OpportunityTools {
     try {
       // Build search parameters with correct API naming (underscores)
       const searchParams: any = {
-        location_id: this.ghlClient.getConfig().locationId,
+        location_id: "",
         limit: params.limit || 20
       };
 
@@ -360,7 +361,7 @@ export class OpportunityTools {
 
       process.stderr.write(`[GHL MCP] Calling searchOpportunities with params: ${JSON.stringify(searchParams, null, 2)}\n`);
 
-      const response = await this.ghlClient.searchOpportunities(searchParams);
+      const response = await this.getClient().searchOpportunities(searchParams);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -387,7 +388,7 @@ export class OpportunityTools {
    */
   private async getPipelines(): Promise<{ success: boolean; pipelines: any[]; message: string }> {
     try {
-      const response = await this.ghlClient.getPipelines();
+      const response = await this.getClient().getPipelines();
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -412,7 +413,7 @@ export class OpportunityTools {
    */
   private async getOpportunity(opportunityId: string): Promise<{ success: boolean; opportunity: GHLOpportunity; message: string }> {
     try {
-      const response = await this.ghlClient.getOpportunity(opportunityId);
+      const response = await this.getClient().getOpportunity(opportunityId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -435,7 +436,6 @@ export class OpportunityTools {
   private async createOpportunity(params: MCPCreateOpportunityParams): Promise<{ success: boolean; opportunity: GHLOpportunity; message: string }> {
     try {
       const opportunityData = {
-        locationId: this.ghlClient.getConfig().locationId,
         name: params.name,
         pipelineId: params.pipelineId,
         contactId: params.contactId,
@@ -446,7 +446,7 @@ export class OpportunityTools {
         customFields: params.customFields
       };
 
-      const response = await this.ghlClient.createOpportunity(opportunityData);
+      const response = await this.getClient().createOpportunity(opportunityData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -468,7 +468,7 @@ export class OpportunityTools {
    */
   private async updateOpportunityStatus(opportunityId: string, status: string): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.updateOpportunityStatus(opportunityId, status as any);
+      const response = await this.getClient().updateOpportunityStatus(opportunityId, status as any);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -489,7 +489,7 @@ export class OpportunityTools {
    */
   private async deleteOpportunity(opportunityId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteOpportunity(opportunityId);
+      const response = await this.getClient().deleteOpportunity(opportunityId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -520,7 +520,7 @@ export class OpportunityTools {
       if (params.monetaryValue !== undefined) updateData.monetaryValue = params.monetaryValue;
       if (params.assignedTo) updateData.assignedTo = params.assignedTo;
 
-      const response = await this.ghlClient.updateOpportunity(params.opportunityId, updateData);
+      const response = await this.getClient().updateOpportunity(params.opportunityId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -543,7 +543,6 @@ export class OpportunityTools {
   private async upsertOpportunity(params: MCPUpsertOpportunityParams): Promise<{ success: boolean; opportunity: GHLOpportunity; isNew: boolean; message: string }> {
     try {
       const upsertData = {
-        locationId: this.ghlClient.getConfig().locationId,
         pipelineId: params.pipelineId,
         contactId: params.contactId,
         name: params.name,
@@ -553,7 +552,7 @@ export class OpportunityTools {
         assignedTo: params.assignedTo
       };
 
-      const response = await this.ghlClient.upsertOpportunity(upsertData);
+      const response = await this.getClient().upsertOpportunity(upsertData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -578,7 +577,7 @@ export class OpportunityTools {
    */
   private async addOpportunityFollowers(params: MCPAddOpportunityFollowersParams): Promise<{ success: boolean; followers: string[]; followersAdded: string[]; message: string }> {
     try {
-      const response = await this.ghlClient.addOpportunityFollowers(params.opportunityId, params.followers);
+      const response = await this.getClient().addOpportunityFollowers(params.opportunityId, params.followers);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -601,7 +600,7 @@ export class OpportunityTools {
    */
   private async removeOpportunityFollowers(params: MCPRemoveOpportunityFollowersParams): Promise<{ success: boolean; followers: string[]; followersRemoved: string[]; message: string }> {
     try {
-      const response = await this.ghlClient.removeOpportunityFollowers(params.opportunityId, params.followers);
+      const response = await this.getClient().removeOpportunityFollowers(params.opportunityId, params.followers);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';

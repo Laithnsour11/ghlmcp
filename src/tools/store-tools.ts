@@ -45,6 +45,7 @@ import {
 
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 
 export interface StoreToolResult {
   content: {
@@ -53,8 +54,10 @@ export interface StoreToolResult {
   }[];
 }
 
-export class StoreTools {
-  constructor(private apiClient: GHLApiClient) {}
+export class StoreTools extends BaseTool {
+  constructor(apiClient?: GHLApiClient) {
+    super(apiClient);
+  }
 
   /**
    * SHIPPING ZONES TOOLS
@@ -66,13 +69,13 @@ export class StoreTools {
   async createShippingZone(params: MCPCreateShippingZoneParams): Promise<StoreToolResult> {
     try {
       const request: GHLCreateShippingZoneRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         name: params.name,
         countries: params.countries
       };
 
-      const response = await this.apiClient.createShippingZone(request);
+      const response = await this.getClient().createShippingZone(request);
 
       const zoneInfo = response.data?.data;
       if (!zoneInfo) {
@@ -117,14 +120,14 @@ The shipping zone is now active and ready to use with shipping rates.`
   async listShippingZones(params: MCPListShippingZonesParams): Promise<StoreToolResult> {
     try {
       const request: GHLGetShippingZonesRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         limit: params.limit,
         offset: params.offset,
         withShippingRate: params.withShippingRate
       };
 
-      const response = await this.apiClient.listShippingZones(request);
+      const response = await this.getClient().listShippingZones(request);
 
       const zones = response.data?.data || [];
 
@@ -177,12 +180,12 @@ ${zone.countries.map(country => {
   async getShippingZone(params: MCPGetShippingZoneParams): Promise<StoreToolResult> {
     try {
       const request: Omit<GHLGetShippingZonesRequest, 'limit' | 'offset'> = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         withShippingRate: params.withShippingRate
       };
 
-      const response = await this.apiClient.getShippingZone(params.shippingZoneId, request);
+      const response = await this.getClient().getShippingZone(params.shippingZoneId, request);
 
       const zone = response.data?.data;
       if (!zone) {
@@ -234,14 +237,14 @@ Use this zone ID to create shipping rates or update zone configuration.`
   async updateShippingZone(params: MCPUpdateShippingZoneParams): Promise<StoreToolResult> {
     try {
       const request: GHLUpdateShippingZoneRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
       if (params.name) request.name = params.name;
       if (params.countries) request.countries = params.countries;
 
-      const response = await this.apiClient.updateShippingZone(params.shippingZoneId, request);
+      const response = await this.getClient().updateShippingZone(params.shippingZoneId, request);
 
       const zone = response.data?.data;
       if (!zone) {
@@ -286,11 +289,11 @@ The shipping zone configuration has been updated successfully.`
   async deleteShippingZone(params: MCPDeleteShippingZoneParams): Promise<StoreToolResult> {
     try {
       const request: GHLDeleteShippingZoneRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.deleteShippingZone(params.shippingZoneId, request);
+      const response = await this.getClient().deleteShippingZone(params.shippingZoneId, request);
 
       return {
         content: [{
@@ -324,7 +327,7 @@ The shipping zone and all associated shipping rates have been permanently delete
   async getAvailableShippingRates(params: MCPGetAvailableShippingRatesParams): Promise<StoreToolResult> {
     try {
       const request: GHLGetAvailableShippingRatesRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         country: params.country,
         address: params.address,
@@ -335,7 +338,7 @@ The shipping zone and all associated shipping rates have been permanently delete
         couponCode: params.couponCode
       };
 
-      const response = await this.apiClient.getAvailableShippingRates(request);
+      const response = await this.getClient().getAvailableShippingRates(request);
 
       const rates = response.data?.data || [];
 
@@ -397,7 +400,7 @@ Select the appropriate shipping rate for checkout.`
   async createShippingRate(params: MCPCreateShippingRateParams): Promise<StoreToolResult> {
     try {
       const request: GHLCreateShippingRateRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         name: params.name,
         description: params.description,
@@ -412,7 +415,7 @@ Select the appropriate shipping rate for checkout.`
         shippingCarrierServices: params.shippingCarrierServices
       };
 
-      const response = await this.apiClient.createShippingRate(params.shippingZoneId, request);
+      const response = await this.getClient().createShippingRate(params.shippingZoneId, request);
 
       const rate = response.data?.data;
       if (!rate) {
@@ -458,13 +461,13 @@ The shipping rate is now active and available for orders.`
   async listShippingRates(params: MCPListShippingRatesParams): Promise<StoreToolResult> {
     try {
       const request: GHLGetShippingRatesRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         limit: params.limit,
         offset: params.offset
       };
 
-      const response = await this.apiClient.listShippingRates(params.shippingZoneId, request);
+      const response = await this.getClient().listShippingRates(params.shippingZoneId, request);
 
       const rates = response.data?.data || [];
 
@@ -514,11 +517,11 @@ Use rate IDs to update or delete specific shipping rates.`
   async getShippingRate(params: MCPGetShippingRateParams): Promise<StoreToolResult> {
     try {
       const request: Omit<GHLGetShippingRatesRequest, 'limit' | 'offset'> = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.getShippingRate(
+      const response = await this.getClient().getShippingRate(
         params.shippingZoneId, 
         params.shippingRateId, 
         request
@@ -570,7 +573,7 @@ Use this rate information to manage shipping configurations.`
   async updateShippingRate(params: MCPUpdateShippingRateParams): Promise<StoreToolResult> {
     try {
       const request: GHLUpdateShippingRateRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
@@ -587,7 +590,7 @@ Use this rate information to manage shipping configurations.`
       if (params.percentageOfRateFee !== undefined) request.percentageOfRateFee = params.percentageOfRateFee;
       if (params.shippingCarrierServices !== undefined) request.shippingCarrierServices = params.shippingCarrierServices;
 
-      const response = await this.apiClient.updateShippingRate(
+      const response = await this.getClient().updateShippingRate(
         params.shippingZoneId,
         params.shippingRateId,
         request
@@ -634,11 +637,11 @@ The shipping rate configuration has been updated successfully.`
   async deleteShippingRate(params: MCPDeleteShippingRateParams): Promise<StoreToolResult> {
     try {
       const request: GHLDeleteShippingRateRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.deleteShippingRate(
+      const response = await this.getClient().deleteShippingRate(
         params.shippingZoneId,
         params.shippingRateId,
         request
@@ -678,7 +681,7 @@ The shipping rate has been permanently deleted. This action cannot be undone.
   async createShippingCarrier(params: MCPCreateShippingCarrierParams): Promise<StoreToolResult> {
     try {
       const request: GHLCreateShippingCarrierRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         name: params.name,
         callbackUrl: params.callbackUrl,
@@ -686,7 +689,7 @@ The shipping rate has been permanently deleted. This action cannot be undone.
         allowsMultipleServiceSelection: params.allowsMultipleServiceSelection
       };
 
-      const response = await this.apiClient.createShippingCarrier(request);
+      const response = await this.getClient().createShippingCarrier(request);
 
       const carrier = response.data?.data;
       if (!carrier) {
@@ -728,11 +731,11 @@ The shipping carrier is now available for creating carrier-based shipping rates.
   async listShippingCarriers(params: MCPListShippingCarriersParams): Promise<StoreToolResult> {
     try {
       const request: GHLGetShippingCarriersRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.listShippingCarriers(request);
+      const response = await this.getClient().listShippingCarriers(request);
 
       const carriers = response.data?.data || [];
 
@@ -782,11 +785,11 @@ Use carrier IDs to create carrier-based shipping rates or manage carrier configu
   async getShippingCarrier(params: MCPGetShippingCarrierParams): Promise<StoreToolResult> {
     try {
       const request: GHLGetShippingCarriersRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.getShippingCarrier(params.shippingCarrierId, request);
+      const response = await this.getClient().getShippingCarrier(params.shippingCarrierId, request);
 
       const carrier = response.data?.data;
       if (!carrier) {
@@ -831,7 +834,7 @@ Use this carrier to create dynamic shipping rates based on real-time carrier pri
   async updateShippingCarrier(params: MCPUpdateShippingCarrierParams): Promise<StoreToolResult> {
     try {
       const request: GHLUpdateShippingCarrierRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
@@ -841,7 +844,7 @@ Use this carrier to create dynamic shipping rates based on real-time carrier pri
       if (params.services !== undefined) request.services = params.services;
       if (params.allowsMultipleServiceSelection !== undefined) request.allowsMultipleServiceSelection = params.allowsMultipleServiceSelection;
 
-      const response = await this.apiClient.updateShippingCarrier(params.shippingCarrierId, request);
+      const response = await this.getClient().updateShippingCarrier(params.shippingCarrierId, request);
 
       const carrier = response.data?.data;
       if (!carrier) {
@@ -882,11 +885,11 @@ The shipping carrier configuration has been updated successfully.`
   async deleteShippingCarrier(params: MCPDeleteShippingCarrierParams): Promise<StoreToolResult> {
     try {
       const request: GHLDeleteShippingCarrierRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.deleteShippingCarrier(params.shippingCarrierId, request);
+      const response = await this.getClient().deleteShippingCarrier(params.shippingCarrierId, request);
 
       return {
         content: [{
@@ -920,14 +923,14 @@ The shipping carrier has been permanently deleted. This action cannot be undone.
   async createStoreSetting(params: MCPCreateStoreSettingParams): Promise<StoreToolResult> {
     try {
       const request: GHLCreateStoreSettingRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         shippingOrigin: params.shippingOrigin,
         storeOrderNotification: params.storeOrderNotification,
         storeOrderFulfillmentNotification: params.storeOrderFulfillmentNotification
       };
 
-      const response = await this.apiClient.createStoreSetting(request);
+      const response = await this.getClient().createStoreSetting(request);
 
       const settings = response.data?.data;
       if (!settings) {
@@ -980,11 +983,11 @@ Your store settings have been configured successfully.`
   async getStoreSetting(params: MCPGetStoreSettingParams): Promise<StoreToolResult> {
     try {
       const request: GHLGetStoreSettingRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.getStoreSetting(request);
+      const response = await this.getClient().getStoreSetting(request);
 
       const settings = response.data?.data;
       if (!settings) {

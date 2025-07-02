@@ -1,4 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPV2CreateCustomFieldParams,
@@ -11,8 +12,10 @@ import {
   MCPV2DeleteCustomFieldFolderParams
 } from '../types/ghl-types.js';
 
-export class CustomFieldV2Tools {
-  constructor(private apiClient: GHLApiClient) {}
+export class CustomFieldV2Tools extends BaseTool {
+  constructor(apiClient?: GHLApiClient) {
+    super(apiClient);
+  }
 
   getTools(): Tool[] {
     return [
@@ -282,7 +285,7 @@ export class CustomFieldV2Tools {
       switch (name) {
         case 'ghl_get_custom_field_by_id': {
           const params: MCPV2GetCustomFieldByIdParams = args;
-          const result = await this.apiClient.getCustomFieldV2ById(params.id);
+          const result = await this.getClient().getCustomFieldV2ById(params.id);
           return {
             success: true,
             data: result.data,
@@ -292,7 +295,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_create_custom_field': {
           const params: MCPV2CreateCustomFieldParams = args;
-          const result = await this.apiClient.createCustomFieldV2({
+          const result = await this.getClient().createCustomFieldV2({
             locationId: params.locationId || '',
             name: params.name,
             description: params.description,
@@ -316,7 +319,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_update_custom_field': {
           const params: MCPV2UpdateCustomFieldParams = args;
-          const result = await this.apiClient.updateCustomFieldV2(params.id, {
+          const result = await this.getClient().updateCustomFieldV2(params.id, {
             locationId: params.locationId || '',
             name: params.name,
             description: params.description,
@@ -335,7 +338,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_delete_custom_field': {
           const params: MCPV2DeleteCustomFieldParams = args;
-          const result = await this.apiClient.deleteCustomFieldV2(params.id);
+          const result = await this.getClient().deleteCustomFieldV2(params.id);
           return {
             success: true,
             data: result.data,
@@ -345,7 +348,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_get_custom_fields_by_object_key': {
           const params: MCPV2GetCustomFieldsByObjectKeyParams = args;
-          const result = await this.apiClient.getCustomFieldsV2ByObjectKey({
+          const result = await this.getClient().getCustomFieldsV2ByObjectKey({
             objectKey: params.objectKey,
             locationId: params.locationId || ''
           });
@@ -358,7 +361,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_create_custom_field_folder': {
           const params: MCPV2CreateCustomFieldFolderParams = args;
-          const result = await this.apiClient.createCustomFieldV2Folder({
+          const result = await this.getClient().createCustomFieldV2Folder({
             objectKey: params.objectKey,
             name: params.name,
             locationId: params.locationId || ''
@@ -372,7 +375,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_update_custom_field_folder': {
           const params: MCPV2UpdateCustomFieldFolderParams = args;
-          const result = await this.apiClient.updateCustomFieldV2Folder(params.id, {
+          const result = await this.getClient().updateCustomFieldV2Folder(params.id, {
             name: params.name,
             locationId: params.locationId || ''
           });
@@ -385,7 +388,7 @@ export class CustomFieldV2Tools {
 
         case 'ghl_delete_custom_field_folder': {
           const params: MCPV2DeleteCustomFieldFolderParams = args;
-          const result = await this.apiClient.deleteCustomFieldV2Folder({
+          const result = await this.getClient().deleteCustomFieldV2Folder({
             id: params.id,
             locationId: params.locationId || ''
           });

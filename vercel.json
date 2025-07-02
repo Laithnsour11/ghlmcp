@@ -7,6 +7,28 @@
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/api/index.js" }
-  ]
-} 
+    {
+      "src": "/multi-tenant/(.*)",
+      "dest": "/api/ghl-multi-tenant.js"
+    },
+    {
+      "src": "/mt/(.*)",
+      "dest": "/api/ghl-multi-tenant.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ],
+  "functions": {
+    "api/ghl-multi-tenant.js": {
+      "maxDuration": 60
+    },
+    "api/multi-tenant.js": {
+      "maxDuration": 60
+    },
+    "api/index.js": {
+      "maxDuration": 60
+    }
+  }
+}

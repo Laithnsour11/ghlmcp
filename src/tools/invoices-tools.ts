@@ -1,4 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   // Invoice Template Types
@@ -63,11 +64,9 @@ import {
   AltDto
 } from '../types/ghl-types.js';
 
-export class InvoicesTools {
-  private client: GHLApiClient;
-
-  constructor(client: GHLApiClient) {
-    this.client = client;
+export class InvoicesTools extends BaseTool {
+  constructor(client?: GHLApiClient) {
+    super(client);
   }
 
   getTools(): Tool[] {
@@ -343,66 +342,66 @@ export class InvoicesTools {
     switch (name) {
       // Invoice Template Handlers
       case 'create_invoice_template':
-        return this.client.createInvoiceTemplate(args as CreateInvoiceTemplateDto);
+        return this.getClient().createInvoiceTemplate(args as CreateInvoiceTemplateDto);
 
       case 'list_invoice_templates':
-        return this.client.listInvoiceTemplates(args);
+        return this.getClient().listInvoiceTemplates(args);
 
       case 'get_invoice_template':
-        return this.client.getInvoiceTemplate(args.templateId, args);
+        return this.getClient().getInvoiceTemplate(args.templateId, args);
 
       case 'update_invoice_template':
         const { templateId: updateTemplateId, ...updateTemplateData } = args;
-        return this.client.updateInvoiceTemplate(updateTemplateId, updateTemplateData as UpdateInvoiceTemplateDto);
+        return this.getClient().updateInvoiceTemplate(updateTemplateId, updateTemplateData as UpdateInvoiceTemplateDto);
 
       case 'delete_invoice_template':
-        return this.client.deleteInvoiceTemplate(args.templateId, args);
+        return this.getClient().deleteInvoiceTemplate(args.templateId, args);
 
       // Invoice Schedule Handlers
       case 'create_invoice_schedule':
-        return this.client.createInvoiceSchedule(args as CreateInvoiceScheduleDto);
+        return this.getClient().createInvoiceSchedule(args as CreateInvoiceScheduleDto);
 
       case 'list_invoice_schedules':
-        return this.client.listInvoiceSchedules(args);
+        return this.getClient().listInvoiceSchedules(args);
 
       case 'get_invoice_schedule':
-        return this.client.getInvoiceSchedule(args.scheduleId, args);
+        return this.getClient().getInvoiceSchedule(args.scheduleId, args);
 
       // Invoice Management Handlers
       case 'create_invoice':
-        return this.client.createInvoice(args as CreateInvoiceDto);
+        return this.getClient().createInvoice(args as CreateInvoiceDto);
 
       case 'list_invoices':
-        return this.client.listInvoices(args);
+        return this.getClient().listInvoices(args);
 
       case 'get_invoice':
-        return this.client.getInvoice(args.invoiceId, args);
+        return this.getClient().getInvoice(args.invoiceId, args);
 
       case 'send_invoice':
         const { invoiceId: sendInvoiceId, ...sendInvoiceData } = args;
-        return this.client.sendInvoice(sendInvoiceId, sendInvoiceData as SendInvoiceDto);
+        return this.getClient().sendInvoice(sendInvoiceId, sendInvoiceData as SendInvoiceDto);
 
       // Estimate Handlers
       case 'create_estimate':
-        return this.client.createEstimate(args as CreateEstimatesDto);
+        return this.getClient().createEstimate(args as CreateEstimatesDto);
 
       case 'list_estimates':
-        return this.client.listEstimates(args);
+        return this.getClient().listEstimates(args);
 
       case 'send_estimate':
         const { estimateId: sendEstimateId, ...sendEstimateData } = args;
-        return this.client.sendEstimate(sendEstimateId, sendEstimateData as SendEstimateDto);
+        return this.getClient().sendEstimate(sendEstimateId, sendEstimateData as SendEstimateDto);
 
       case 'create_invoice_from_estimate':
         const { estimateId: invoiceFromEstimateId, ...invoiceFromEstimateData } = args;
-        return this.client.createInvoiceFromEstimate(invoiceFromEstimateId, invoiceFromEstimateData as CreateInvoiceFromEstimateDto);
+        return this.getClient().createInvoiceFromEstimate(invoiceFromEstimateId, invoiceFromEstimateData as CreateInvoiceFromEstimateDto);
 
       // Utility Handlers
       case 'generate_invoice_number':
-        return this.client.generateInvoiceNumber(args);
+        return this.getClient().generateInvoiceNumber(args);
 
       case 'generate_estimate_number':
-        return this.client.generateEstimateNumber(args);
+        return this.getClient().generateEstimateNumber(args);
 
       default:
         throw new Error(`Unknown invoices tool: ${name}`);

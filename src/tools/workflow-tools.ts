@@ -1,11 +1,14 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import { 
   MCPGetWorkflowsParams
 } from '../types/ghl-types.js';
 
-export class WorkflowTools {
-  constructor(private apiClient: GHLApiClient) {}
+export class WorkflowTools extends BaseTool {
+  constructor(apiClient?: GHLApiClient) {
+    super(apiClient);
+  }
 
   getTools(): Tool[] {
     return [
@@ -36,7 +39,7 @@ export class WorkflowTools {
           throw new Error(`Unknown workflow tool: ${name}`);
       }
     } catch (error) {
-      console.error(`Error executing workflow tool ${name}:`, error);
+      this.logError(`Error executing workflow tool ${name}:`, error);
       throw error;
     }
   }
@@ -48,7 +51,7 @@ export class WorkflowTools {
    */
   private async getWorkflows(params: MCPGetWorkflowsParams): Promise<any> {
     try {
-      const result = await this.apiClient.getWorkflows({
+      const result = await this.getClient().getWorkflows({
         locationId: params.locationId || ''
       });
 
@@ -69,7 +72,7 @@ export class WorkflowTools {
         }
       };
     } catch (error) {
-      console.error('Error getting workflows:', error);
+      this.logError('Error getting workflows:', error);
       throw new Error(`Failed to get workflows: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

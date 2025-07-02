@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPCreateContactParams,
@@ -58,8 +59,8 @@ import {
  * Contact Tools class
  * Provides comprehensive contact management capabilities
  */
-export class ContactTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class ContactTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get tool definitions for all contact operations
@@ -485,6 +486,7 @@ export class ContactTools {
    * Execute a contact tool with the given parameters
    */
   async executeTool(toolName: string, params: any): Promise<any> {
+    this.log(`Executing tool: ${toolName}`, { params });
     try {
       switch (toolName) {
         // Basic Contact Management
@@ -569,7 +571,7 @@ export class ContactTools {
           throw new Error(`Unknown tool: ${toolName}`);
       }
     } catch (error) {
-      console.error(`Error executing contact tool ${toolName}:`, error);
+      this.logError(`Error executing contact tool ${toolName}:`, error);
       throw error;
     }
   }
@@ -578,8 +580,7 @@ export class ContactTools {
 
   // Basic Contact Management
   private async createContact(params: MCPCreateContactParams): Promise<GHLContact> {
-    const response = await this.ghlClient.createContact({
-        locationId: this.ghlClient.getConfig().locationId,
+    const response = await this.getClient().createContact({
         firstName: params.firstName,
         lastName: params.lastName,
         email: params.email,
@@ -596,9 +597,8 @@ export class ContactTools {
   }
 
   private async searchContacts(params: MCPSearchContactsParams): Promise<GHLSearchContactsResponse> {
-    const response = await this.ghlClient.searchContacts({
-        locationId: this.ghlClient.getConfig().locationId,
-      query: params.query,
+    const response = await this.getClient().searchContacts({
+        query: params.query,
       limit: params.limit,
       filters: {
         ...(params.email && { email: params.email }),
@@ -614,7 +614,7 @@ export class ContactTools {
   }
 
   private async getContact(contactId: string): Promise<GHLContact> {
-    const response = await this.ghlClient.getContact(contactId);
+    const response = await this.getClient().getContact(contactId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to get contact');
@@ -624,7 +624,7 @@ export class ContactTools {
   }
 
   private async updateContact(params: MCPUpdateContactParams): Promise<GHLContact> {
-    const response = await this.ghlClient.updateContact(params.contactId, {
+    const response = await this.getClient().updateContact(params.contactId, {
       firstName: params.firstName,
       lastName: params.lastName,
       email: params.email,
@@ -640,7 +640,7 @@ export class ContactTools {
   }
 
   private async deleteContact(contactId: string): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.deleteContact(contactId);
+    const response = await this.getClient().deleteContact(contactId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to delete contact');
@@ -650,7 +650,7 @@ export class ContactTools {
   }
 
   private async addContactTags(params: MCPAddContactTagsParams): Promise<GHLContactTagsResponse> {
-    const response = await this.ghlClient.addContactTags(params.contactId, params.tags);
+    const response = await this.getClient().addContactTags(params.contactId, params.tags);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to add contact tags');
@@ -660,7 +660,7 @@ export class ContactTools {
   }
 
   private async removeContactTags(params: MCPRemoveContactTagsParams): Promise<GHLContactTagsResponse> {
-    const response = await this.ghlClient.removeContactTags(params.contactId, params.tags);
+    const response = await this.getClient().removeContactTags(params.contactId, params.tags);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to remove contact tags');
@@ -671,7 +671,7 @@ export class ContactTools {
 
   // Task Management
   private async getContactTasks(params: MCPGetContactTasksParams): Promise<GHLTask[]> {
-    const response = await this.ghlClient.getContactTasks(params.contactId);
+    const response = await this.getClient().getContactTasks(params.contactId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to get contact tasks');
@@ -681,7 +681,7 @@ export class ContactTools {
   }
 
   private async createContactTask(params: MCPCreateContactTaskParams): Promise<GHLTask> {
-    const response = await this.ghlClient.createContactTask(params.contactId, {
+    const response = await this.getClient().createContactTask(params.contactId, {
       title: params.title,
       body: params.body,
       dueDate: params.dueDate,
@@ -697,7 +697,7 @@ export class ContactTools {
   }
 
   private async getContactTask(params: MCPGetContactTaskParams): Promise<GHLTask> {
-    const response = await this.ghlClient.getContactTask(params.contactId, params.taskId);
+    const response = await this.getClient().getContactTask(params.contactId, params.taskId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to get contact task');
@@ -707,7 +707,7 @@ export class ContactTools {
   }
 
   private async updateContactTask(params: MCPUpdateContactTaskParams): Promise<GHLTask> {
-    const response = await this.ghlClient.updateContactTask(params.contactId, params.taskId, {
+    const response = await this.getClient().updateContactTask(params.contactId, params.taskId, {
       title: params.title,
       body: params.body,
       dueDate: params.dueDate,
@@ -723,7 +723,7 @@ export class ContactTools {
   }
 
   private async deleteContactTask(params: MCPDeleteContactTaskParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.deleteContactTask(params.contactId, params.taskId);
+    const response = await this.getClient().deleteContactTask(params.contactId, params.taskId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to delete contact task');
@@ -733,7 +733,7 @@ export class ContactTools {
   }
 
   private async updateTaskCompletion(params: MCPUpdateTaskCompletionParams): Promise<GHLTask> {
-    const response = await this.ghlClient.updateTaskCompletion(params.contactId, params.taskId, params.completed);
+    const response = await this.getClient().updateTaskCompletion(params.contactId, params.taskId, params.completed);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to update task completion');
@@ -744,7 +744,7 @@ export class ContactTools {
 
   // Note Management
   private async getContactNotes(params: MCPGetContactNotesParams): Promise<GHLNote[]> {
-    const response = await this.ghlClient.getContactNotes(params.contactId);
+    const response = await this.getClient().getContactNotes(params.contactId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to get contact notes');
@@ -754,7 +754,7 @@ export class ContactTools {
   }
 
   private async createContactNote(params: MCPCreateContactNoteParams): Promise<GHLNote> {
-    const response = await this.ghlClient.createContactNote(params.contactId, {
+    const response = await this.getClient().createContactNote(params.contactId, {
       body: params.body,
       userId: params.userId
     });
@@ -767,7 +767,7 @@ export class ContactTools {
   }
 
   private async getContactNote(params: MCPGetContactNoteParams): Promise<GHLNote> {
-    const response = await this.ghlClient.getContactNote(params.contactId, params.noteId);
+    const response = await this.getClient().getContactNote(params.contactId, params.noteId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to get contact note');
@@ -777,7 +777,7 @@ export class ContactTools {
   }
 
   private async updateContactNote(params: MCPUpdateContactNoteParams): Promise<GHLNote> {
-    const response = await this.ghlClient.updateContactNote(params.contactId, params.noteId, {
+    const response = await this.getClient().updateContactNote(params.contactId, params.noteId, {
       body: params.body,
       userId: params.userId
     });
@@ -790,7 +790,7 @@ export class ContactTools {
   }
 
   private async deleteContactNote(params: MCPDeleteContactNoteParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.deleteContactNote(params.contactId, params.noteId);
+    const response = await this.getClient().deleteContactNote(params.contactId, params.noteId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to delete contact note');
@@ -801,8 +801,7 @@ export class ContactTools {
 
   // Advanced Operations
   private async upsertContact(params: MCPUpsertContactParams): Promise<GHLUpsertContactResponse> {
-    const response = await this.ghlClient.upsertContact({
-      locationId: this.ghlClient.getConfig().locationId,
+    const response = await this.getClient().upsertContact({
       firstName: params.firstName,
       lastName: params.lastName,
       name: params.name,
@@ -830,7 +829,7 @@ export class ContactTools {
   }
 
   private async getDuplicateContact(params: MCPGetDuplicateContactParams): Promise<GHLContact | null> {
-    const response = await this.ghlClient.getDuplicateContact(params.email, params.phone);
+    const response = await this.getClient().getDuplicateContact(params.email, params.phone);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to check for duplicate contact');
@@ -840,7 +839,7 @@ export class ContactTools {
   }
 
   private async getContactsByBusiness(params: MCPGetContactsByBusinessParams): Promise<GHLSearchContactsResponse> {
-    const response = await this.ghlClient.getContactsByBusiness(params.businessId, {
+    const response = await this.getClient().getContactsByBusiness(params.businessId, {
       limit: params.limit,
       skip: params.skip,
       query: params.query
@@ -854,7 +853,7 @@ export class ContactTools {
   }
 
   private async getContactAppointments(params: MCPGetContactAppointmentsParams): Promise<GHLAppointment[]> {
-    const response = await this.ghlClient.getContactAppointments(params.contactId);
+    const response = await this.getClient().getContactAppointments(params.contactId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to get contact appointments');
@@ -865,7 +864,7 @@ export class ContactTools {
 
   // Bulk Operations
   private async bulkUpdateContactTags(params: MCPBulkUpdateContactTagsParams): Promise<GHLBulkTagsResponse> {
-    const response = await this.ghlClient.bulkUpdateContactTags(
+    const response = await this.getClient().bulkUpdateContactTags(
       params.contactIds,
       params.tags,
       params.operation,
@@ -880,7 +879,7 @@ export class ContactTools {
   }
 
   private async bulkUpdateContactBusiness(params: MCPBulkUpdateContactBusinessParams): Promise<GHLBulkBusinessResponse> {
-    const response = await this.ghlClient.bulkUpdateContactBusiness(params.contactIds, params.businessId);
+    const response = await this.getClient().bulkUpdateContactBusiness(params.contactIds, params.businessId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to bulk update contact business');
@@ -891,7 +890,7 @@ export class ContactTools {
 
   // Followers Management
   private async addContactFollowers(params: MCPAddContactFollowersParams): Promise<GHLFollowersResponse> {
-    const response = await this.ghlClient.addContactFollowers(params.contactId, params.followers);
+    const response = await this.getClient().addContactFollowers(params.contactId, params.followers);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to add contact followers');
@@ -901,7 +900,7 @@ export class ContactTools {
   }
 
   private async removeContactFollowers(params: MCPRemoveContactFollowersParams): Promise<GHLFollowersResponse> {
-    const response = await this.ghlClient.removeContactFollowers(params.contactId, params.followers);
+    const response = await this.getClient().removeContactFollowers(params.contactId, params.followers);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to remove contact followers');
@@ -912,7 +911,7 @@ export class ContactTools {
 
   // Campaign Management
   private async addContactToCampaign(params: MCPAddContactToCampaignParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.addContactToCampaign(params.contactId, params.campaignId);
+    const response = await this.getClient().addContactToCampaign(params.contactId, params.campaignId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to add contact to campaign');
@@ -922,7 +921,7 @@ export class ContactTools {
   }
 
   private async removeContactFromCampaign(params: MCPRemoveContactFromCampaignParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.removeContactFromCampaign(params.contactId, params.campaignId);
+    const response = await this.getClient().removeContactFromCampaign(params.contactId, params.campaignId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to remove contact from campaign');
@@ -932,7 +931,7 @@ export class ContactTools {
   }
 
   private async removeContactFromAllCampaigns(params: MCPRemoveContactFromAllCampaignsParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.removeContactFromAllCampaigns(params.contactId);
+    const response = await this.getClient().removeContactFromAllCampaigns(params.contactId);
 
     if (!response.success) {
       throw new Error(response.error?.message || 'Failed to remove contact from all campaigns');
@@ -943,7 +942,7 @@ export class ContactTools {
 
   // Workflow Management
   private async addContactToWorkflow(params: MCPAddContactToWorkflowParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.addContactToWorkflow(
+    const response = await this.getClient().addContactToWorkflow(
       params.contactId,
       params.workflowId,
       params.eventStartTime
@@ -957,7 +956,7 @@ export class ContactTools {
   }
 
   private async removeContactFromWorkflow(params: MCPRemoveContactFromWorkflowParams): Promise<{ succeded: boolean }> {
-    const response = await this.ghlClient.removeContactFromWorkflow(
+    const response = await this.getClient().removeContactFromWorkflow(
       params.contactId,
       params.workflowId,
       params.eventStartTime

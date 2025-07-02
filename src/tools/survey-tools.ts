@@ -1,12 +1,15 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import { 
   MCPGetSurveysParams,
   MCPGetSurveySubmissionsParams
 } from '../types/ghl-types.js';
 
-export class SurveyTools {
-  constructor(private apiClient: GHLApiClient) {}
+export class SurveyTools extends BaseTool {
+  constructor(apiClient?: GHLApiClient) {
+    super(apiClient);
+  }
 
   getTools(): Tool[] {
     return [
@@ -90,7 +93,7 @@ export class SurveyTools {
           throw new Error(`Unknown survey tool: ${name}`);
       }
     } catch (error) {
-      console.error(`Error executing survey tool ${name}:`, error);
+      this.logError(`Error executing survey tool ${name}:`, error);
       throw error;
     }
   }
@@ -102,7 +105,7 @@ export class SurveyTools {
    */
   private async getSurveys(params: MCPGetSurveysParams): Promise<any> {
     try {
-      const result = await this.apiClient.getSurveys({
+      const result = await this.getClient().getSurveys({
         locationId: params.locationId || '',
         skip: params.skip,
         limit: params.limit,
@@ -129,7 +132,7 @@ export class SurveyTools {
         }
       };
     } catch (error) {
-      console.error('Error getting surveys:', error);
+      this.logError('Error getting surveys:', error);
       throw new Error(`Failed to get surveys: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -139,7 +142,7 @@ export class SurveyTools {
    */
   private async getSurveySubmissions(params: MCPGetSurveySubmissionsParams): Promise<any> {
     try {
-      const result = await this.apiClient.getSurveySubmissions({
+      const result = await this.getClient().getSurveySubmissions({
         locationId: params.locationId || '',
         page: params.page,
         limit: params.limit,
@@ -176,7 +179,7 @@ export class SurveyTools {
         }
       };
     } catch (error) {
-      console.error('Error getting survey submissions:', error);
+      this.logError('Error getting survey submissions:', error);
       throw new Error(`Failed to get survey submissions: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

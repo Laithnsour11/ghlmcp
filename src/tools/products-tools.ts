@@ -60,6 +60,7 @@ import {
 
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 
 export interface ProductsToolResult {
   content: {
@@ -68,18 +69,20 @@ export interface ProductsToolResult {
   }[];
 }
 
-export class ProductsTools {
-  constructor(private apiClient: GHLApiClient) {}
+export class ProductsTools extends BaseTool {
+  constructor(apiClient?: GHLApiClient) {
+    super(apiClient);
+  }
 
   // Product Operations
   async createProduct(params: MCPCreateProductParams): Promise<ProductsToolResult> {
     try {
       const request: GHLCreateProductRequest = {
         ...params,
-        locationId: params.locationId || this.apiClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
 
-      const response = await this.apiClient.createProduct(request);
+      const response = await this.getClient().createProduct(request);
       
       if (!response.data) {
         throw new Error('No data returned from API');
@@ -121,10 +124,10 @@ ${response.data.medias?.length ? `📸 **Media Files:** ${response.data.medias.l
     try {
       const request: GHLListProductsRequest = {
         ...params,
-        locationId: params.locationId || this.apiClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
 
-      const response = await this.apiClient.listProducts(request);
+      const response = await this.getClient().listProducts(request);
       
       if (!response.data) {
         throw new Error('No data returned from API');
@@ -379,9 +382,9 @@ ${params.includedInStore !== undefined ? `• **Store Status:** ${params.include
   // Additional Product Operations
   async getProduct(params: MCPGetProductParams): Promise<ProductsToolResult> {
     try {
-      const response = await this.apiClient.getProduct(
+      const response = await this.getClient().getProduct(
         params.productId,
-        params.locationId || this.apiClient.getConfig().locationId
+        params.locationId || ""
       );
       
       if (!response.data) {
@@ -424,10 +427,10 @@ ${response.data.isLabelEnabled ? `🏷️ **Labels:** Enabled` : ''}`
     try {
       const request: GHLUpdateProductRequest = {
         ...params,
-        locationId: params.locationId || this.apiClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
 
-      const response = await this.apiClient.updateProduct(params.productId, request);
+      const response = await this.getClient().updateProduct(params.productId, request);
       
       if (!response.data) {
         throw new Error('No data returned from API');
@@ -460,9 +463,9 @@ ${response.data.isLabelEnabled ? `🏷️ **Labels:** Enabled` : ''}`
 
   async deleteProduct(params: MCPDeleteProductParams): Promise<ProductsToolResult> {
     try {
-      const response = await this.apiClient.deleteProduct(
+      const response = await this.getClient().deleteProduct(
         params.productId,
-        params.locationId || this.apiClient.getConfig().locationId
+        params.locationId || ""
       );
       
       if (!response.data) {
@@ -494,10 +497,10 @@ ${response.data.isLabelEnabled ? `🏷️ **Labels:** Enabled` : ''}`
     try {
       const request: GHLCreatePriceRequest = {
         ...params,
-        locationId: params.locationId || this.apiClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
 
-      const response = await this.apiClient.createPrice(params.productId, request);
+      const response = await this.getClient().createPrice(params.productId, request);
       
       if (!response.data) {
         throw new Error('No data returned from API');
@@ -537,10 +540,10 @@ ${response.data.sku ? `📦 **SKU:** ${response.data.sku}` : ''}
     try {
       const request: GHLListPricesRequest = {
         ...params,
-        locationId: params.locationId || this.apiClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
 
-      const response = await this.apiClient.listPrices(params.productId, request);
+      const response = await this.getClient().listPrices(params.productId, request);
       
       if (!response.data) {
         throw new Error('No data returned from API');
@@ -581,12 +584,12 @@ ${price.sku ? `• **SKU:** ${price.sku}` : ''}
   async listInventory(params: MCPListInventoryParams): Promise<ProductsToolResult> {
     try {
       const request: GHLListInventoryRequest = {
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location',
         ...params
       };
 
-      const response = await this.apiClient.listInventory(request);
+      const response = await this.getClient().listInventory(request);
       
       if (!response.data) {
         throw new Error('No data returned from API');
@@ -631,11 +634,11 @@ ${params.search ? `• **Search:** "${params.search}"` : ''}`
     try {
       const request: GHLCreateProductCollectionRequest = {
         ...params,
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.createProductCollection(request);
+      const response = await this.getClient().createProductCollection(request);
       
       if (!response.data?.data) {
         throw new Error('No data returned from API');
@@ -674,11 +677,11 @@ ${response.data.data.seo?.description ? `📝 **SEO Description:** ${response.da
     try {
       const request: GHLListProductCollectionsRequest = {
         ...params,
-        altId: params.locationId || this.apiClient.getConfig().locationId,
+        altId: params.locationId || "",
         altType: 'location'
       };
 
-      const response = await this.apiClient.listProductCollections(request);
+      const response = await this.getClient().listProductCollections(request);
       
       if (!response.data?.data) {
         throw new Error('No data returned from API');

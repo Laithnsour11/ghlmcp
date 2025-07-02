@@ -1,4 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPCreateAssociationParams,
@@ -13,8 +14,10 @@ import {
   MCPDeleteRelationParams
 } from '../types/ghl-types.js';
 
-export class AssociationTools {
-  constructor(private apiClient: GHLApiClient) {}
+export class AssociationTools extends BaseTool {
+  constructor(apiClient?: GHLApiClient) {
+    super(apiClient);
+  }
 
   getTools(): Tool[] {
     return [
@@ -244,7 +247,7 @@ export class AssociationTools {
       switch (name) {
         case 'ghl_get_all_associations': {
           const params: MCPGetAllAssociationsParams = args;
-          const result = await this.apiClient.getAssociations({
+          const result = await this.getClient().getAssociations({
             locationId: params.locationId || '',
             skip: params.skip || 0,
             limit: params.limit || 20
@@ -258,7 +261,7 @@ export class AssociationTools {
 
         case 'ghl_create_association': {
           const params: MCPCreateAssociationParams = args;
-          const result = await this.apiClient.createAssociation({
+          const result = await this.getClient().createAssociation({
             locationId: params.locationId || '',
             key: params.key,
             firstObjectLabel: params.firstObjectLabel,
@@ -275,7 +278,7 @@ export class AssociationTools {
 
         case 'ghl_get_association_by_id': {
           const params: MCPGetAssociationByIdParams = args;
-          const result = await this.apiClient.getAssociationById(params.associationId);
+          const result = await this.getClient().getAssociationById(params.associationId);
           return {
             success: true,
             data: result.data,
@@ -285,7 +288,7 @@ export class AssociationTools {
 
         case 'ghl_update_association': {
           const params: MCPUpdateAssociationParams = args;
-          const result = await this.apiClient.updateAssociation(params.associationId, {
+          const result = await this.getClient().updateAssociation(params.associationId, {
             firstObjectLabel: params.firstObjectLabel,
             secondObjectLabel: params.secondObjectLabel
           });
@@ -298,7 +301,7 @@ export class AssociationTools {
 
         case 'ghl_delete_association': {
           const params: MCPDeleteAssociationParams = args;
-          const result = await this.apiClient.deleteAssociation(params.associationId);
+          const result = await this.getClient().deleteAssociation(params.associationId);
           return {
             success: true,
             data: result.data,
@@ -308,7 +311,7 @@ export class AssociationTools {
 
         case 'ghl_get_association_by_key': {
           const params: MCPGetAssociationByKeyParams = args;
-          const result = await this.apiClient.getAssociationByKey({
+          const result = await this.getClient().getAssociationByKey({
             keyName: params.keyName,
             locationId: params.locationId || ''
           });
@@ -321,7 +324,7 @@ export class AssociationTools {
 
         case 'ghl_get_association_by_object_key': {
           const params: MCPGetAssociationByObjectKeyParams = args;
-          const result = await this.apiClient.getAssociationByObjectKey({
+          const result = await this.getClient().getAssociationByObjectKey({
             objectKey: params.objectKey,
             locationId: params.locationId
           });
@@ -334,7 +337,7 @@ export class AssociationTools {
 
         case 'ghl_create_relation': {
           const params: MCPCreateRelationParams = args;
-          const result = await this.apiClient.createRelation({
+          const result = await this.getClient().createRelation({
             locationId: params.locationId || '',
             associationId: params.associationId,
             firstRecordId: params.firstRecordId,
@@ -349,7 +352,7 @@ export class AssociationTools {
 
         case 'ghl_get_relations_by_record': {
           const params: MCPGetRelationsByRecordParams = args;
-          const result = await this.apiClient.getRelationsByRecord({
+          const result = await this.getClient().getRelationsByRecord({
             recordId: params.recordId,
             locationId: params.locationId || '',
             skip: params.skip || 0,
@@ -365,7 +368,7 @@ export class AssociationTools {
 
         case 'ghl_delete_relation': {
           const params: MCPDeleteRelationParams = args;
-          const result = await this.apiClient.deleteRelation({
+          const result = await this.getClient().deleteRelation({
             relationId: params.relationId,
             locationId: params.locationId || ''
           });

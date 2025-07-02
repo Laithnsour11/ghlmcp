@@ -1,4 +1,5 @@
 import { GHLApiClient } from '../clients/ghl-api-client.js';
+import { BaseTool } from './base-tool.js';
 import {
   MCPGetAllObjectsParams,
   MCPCreateObjectSchemaParams,
@@ -31,8 +32,8 @@ export interface Tool {
  * ObjectTools class for GoHighLevel Custom Objects API endpoints
  * Handles both object schema management and record operations for custom and standard objects
  */
-export class ObjectTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class ObjectTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all available Custom Objects tool definitions
@@ -345,7 +346,7 @@ export class ObjectTools {
    */
   private async getAllObjects(params: MCPGetAllObjectsParams = {}): Promise<{ success: boolean; objects: any[]; message: string }> {
     try {
-      const response = await this.ghlClient.getObjectsByLocation(params.locationId);
+      const response = await this.getClient().getObjectsByLocation(params.locationId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -373,11 +374,11 @@ export class ObjectTools {
         labels: params.labels,
         key: params.key,
         description: params.description,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId,
+        locationId: params.locationId || "",
         primaryDisplayPropertyDetails: params.primaryDisplayPropertyDetails
       };
 
-      const response = await this.ghlClient.createObjectSchema(schemaData);
+      const response = await this.getClient().createObjectSchema(schemaData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -401,11 +402,11 @@ export class ObjectTools {
     try {
       const requestParams: GHLGetObjectSchemaRequest = {
         key: params.key,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId,
+        locationId: params.locationId || "",
         fetchProperties: params.fetchProperties
       };
 
-      const response = await this.ghlClient.getObjectSchema(requestParams);
+      const response = await this.getClient().getObjectSchema(requestParams);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -432,11 +433,11 @@ export class ObjectTools {
       const updateData: GHLUpdateObjectSchemaRequest = {
         labels: params.labels,
         description: params.description,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId,
+        locationId: params.locationId || "",
         searchableProperties: params.searchableProperties
       };
 
-      const response = await this.ghlClient.updateObjectSchema(params.key, updateData);
+      const response = await this.getClient().updateObjectSchema(params.key, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -460,12 +461,12 @@ export class ObjectTools {
     try {
       const recordData: GHLCreateObjectRecordRequest = {
         properties: params.properties,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId,
+        locationId: params.locationId || "",
         owner: params.owner,
         followers: params.followers
       };
 
-      const response = await this.ghlClient.createObjectRecord(params.schemaKey, recordData);
+      const response = await this.getClient().createObjectRecord(params.schemaKey, recordData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -488,7 +489,7 @@ export class ObjectTools {
    */
   private async getObjectRecord(params: MCPGetObjectRecordParams): Promise<{ success: boolean; record: any; message: string }> {
     try {
-      const response = await this.ghlClient.getObjectRecord(params.schemaKey, params.recordId);
+      const response = await this.getClient().getObjectRecord(params.schemaKey, params.recordId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -512,12 +513,12 @@ export class ObjectTools {
     try {
       const updateData: GHLUpdateObjectRecordRequest = {
         properties: params.properties,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId,
+        locationId: params.locationId || "",
         owner: params.owner,
         followers: params.followers
       };
 
-      const response = await this.ghlClient.updateObjectRecord(params.schemaKey, params.recordId, updateData);
+      const response = await this.getClient().updateObjectRecord(params.schemaKey, params.recordId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -539,7 +540,7 @@ export class ObjectTools {
    */
   private async deleteObjectRecord(params: MCPDeleteObjectRecordParams): Promise<{ success: boolean; deletedId: string; message: string }> {
     try {
-      const response = await this.ghlClient.deleteObjectRecord(params.schemaKey, params.recordId);
+      const response = await this.getClient().deleteObjectRecord(params.schemaKey, params.recordId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -562,14 +563,14 @@ export class ObjectTools {
   private async searchObjectRecords(params: MCPSearchObjectRecordsParams): Promise<{ success: boolean; records: any[]; total: number; message: string }> {
     try {
       const searchData: GHLSearchObjectRecordsRequest = {
-        locationId: params.locationId || this.ghlClient.getConfig().locationId,
+        locationId: params.locationId || "",
         page: params.page || 1,
         pageLimit: params.pageLimit || 10,
         query: params.query,
         searchAfter: params.searchAfter || []
       };
 
-      const response = await this.ghlClient.searchObjectRecords(params.schemaKey, searchData);
+      const response = await this.getClient().searchObjectRecords(params.schemaKey, searchData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';

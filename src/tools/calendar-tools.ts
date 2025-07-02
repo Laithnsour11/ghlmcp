@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPGetCalendarsParams,
@@ -48,8 +49,8 @@ import {
  * Calendar Tools Class
  * Implements MCP tools for calendar and appointment management
  */
-export class CalendarTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class CalendarTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all calendar tool definitions for MCP server
@@ -953,7 +954,7 @@ export class CalendarTools {
    */
   private async getCalendarGroups(): Promise<{ success: boolean; groups: any[]; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendarGroups();
+      const response = await this.getClient().getCalendarGroups();
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -979,7 +980,7 @@ export class CalendarTools {
    */
   private async getCalendars(params: MCPGetCalendarsParams = {}): Promise<{ success: boolean; calendars: GHLCalendar[]; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendars(params);
+      const response = await this.getClient().getCalendars(params);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1005,7 +1006,6 @@ export class CalendarTools {
   private async createCalendar(params: MCPCreateCalendarParams): Promise<{ success: boolean; calendar: GHLCalendar; message: string }> {
     try {
       const calendarData = {
-        locationId: this.ghlClient.getConfig().locationId,
         name: params.name,
         description: params.description,
         calendarType: params.calendarType,
@@ -1019,7 +1019,7 @@ export class CalendarTools {
         isActive: params.isActive !== undefined ? params.isActive : true
       };
 
-      const response = await this.ghlClient.createCalendar(calendarData);
+      const response = await this.getClient().createCalendar(calendarData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1041,7 +1041,7 @@ export class CalendarTools {
    */
   private async getCalendar(calendarId: string): Promise<{ success: boolean; calendar: GHLCalendar; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendar(calendarId);
+      const response = await this.getClient().getCalendar(calendarId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1065,7 +1065,7 @@ export class CalendarTools {
     try {
       const { calendarId, ...updateData } = params;
       
-      const response = await this.ghlClient.updateCalendar(calendarId, updateData);
+      const response = await this.getClient().updateCalendar(calendarId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1087,7 +1087,7 @@ export class CalendarTools {
    */
   private async deleteCalendar(calendarId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteCalendar(calendarId);
+      const response = await this.getClient().deleteCalendar(calendarId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1113,7 +1113,6 @@ export class CalendarTools {
       const endTime = this.convertToMilliseconds(params.endTime);
 
       const eventParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         startTime,
         endTime,
         userId: params.userId,
@@ -1121,7 +1120,7 @@ export class CalendarTools {
         groupId: params.groupId
       };
 
-      const response = await this.ghlClient.getCalendarEvents(eventParams);
+      const response = await this.getClient().getCalendarEvents(eventParams);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1158,7 +1157,7 @@ export class CalendarTools {
         userId: params.userId
       };
 
-      const response = await this.ghlClient.getFreeSlots(slotParams);
+      const response = await this.getClient().getFreeSlots(slotParams);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1182,7 +1181,6 @@ export class CalendarTools {
     try {
       const appointmentData = {
         calendarId: params.calendarId,
-        locationId: this.ghlClient.getConfig().locationId,
         contactId: params.contactId,
         startTime: params.startTime,
         endTime: params.endTime,
@@ -1195,7 +1193,7 @@ export class CalendarTools {
         toNotify: params.toNotify !== undefined ? params.toNotify : true
       };
 
-      const response = await this.ghlClient.createAppointment(appointmentData);
+      const response = await this.getClient().createAppointment(appointmentData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1217,7 +1215,7 @@ export class CalendarTools {
    */
   private async getAppointment(appointmentId: string): Promise<{ success: boolean; appointment: GHLCalendarEvent; message: string }> {
     try {
-      const response = await this.ghlClient.getAppointment(appointmentId);
+      const response = await this.getClient().getAppointment(appointmentId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1241,7 +1239,7 @@ export class CalendarTools {
     try {
       const { appointmentId, ...updateData } = params;
       
-      const response = await this.ghlClient.updateAppointment(appointmentId, updateData);
+      const response = await this.getClient().updateAppointment(appointmentId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1263,7 +1261,7 @@ export class CalendarTools {
    */
   private async deleteAppointment(appointmentId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteAppointment(appointmentId);
+      const response = await this.getClient().deleteAppointment(appointmentId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1285,7 +1283,6 @@ export class CalendarTools {
   private async createBlockSlot(params: MCPCreateBlockSlotParams): Promise<{ success: boolean; blockSlot: GHLBlockSlotResponse; message: string }> {
     try {
       const blockSlotData = {
-        locationId: this.ghlClient.getConfig().locationId,
         startTime: params.startTime,
         endTime: params.endTime,
         title: params.title,
@@ -1293,7 +1290,7 @@ export class CalendarTools {
         assignedUserId: params.assignedUserId
       };
 
-      const response = await this.ghlClient.createBlockSlot(blockSlotData);
+      const response = await this.getClient().createBlockSlot(blockSlotData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1317,7 +1314,7 @@ export class CalendarTools {
     try {
       const { blockSlotId, ...updateData } = params;
       
-      const response = await this.ghlClient.updateBlockSlot(blockSlotId, updateData);
+      const response = await this.getClient().updateBlockSlot(blockSlotId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1378,13 +1375,12 @@ export class CalendarTools {
   private async createCalendarGroup(params: MCPCreateCalendarGroupParams): Promise<{ success: boolean; group: any; message: string }> {
     try {
       const groupData = {
-        locationId: this.ghlClient.getConfig().locationId,
         name: params.name,
         description: params.description,
         slug: params.slug
       };
 
-      const response = await this.ghlClient.createCalendarGroup(groupData);
+      const response = await this.getClient().createCalendarGroup(groupData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1406,8 +1402,8 @@ export class CalendarTools {
    */
   private async validateGroupSlug(params: MCPValidateGroupSlugParams): Promise<{ success: boolean; available?: boolean; message: string }> {
     try {
-      const locationId = params.locationId || this.ghlClient.getConfig().locationId;
-      const response = await this.ghlClient.validateCalendarGroupSlug(params.slug, locationId);
+      const locationId = params.locationId || "";
+      const response = await this.getClient().validateCalendarGroupSlug(params.slug, locationId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1430,7 +1426,7 @@ export class CalendarTools {
   private async updateCalendarGroup(params: MCPUpdateCalendarGroupParams): Promise<{ success: boolean; group: any; message: string }> {
     try {
       const { groupId, ...updateData } = params;
-      const response = await this.ghlClient.updateCalendarGroup(groupId, updateData);
+      const response = await this.getClient().updateCalendarGroup(groupId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1452,7 +1448,7 @@ export class CalendarTools {
    */
   private async deleteCalendarGroup(params: MCPDeleteCalendarGroupParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteCalendarGroup(params.groupId);
+      const response = await this.getClient().deleteCalendarGroup(params.groupId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1473,7 +1469,7 @@ export class CalendarTools {
    */
   private async disableCalendarGroup(params: MCPDisableCalendarGroupParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.disableCalendarGroup(params.groupId, params.isActive);
+      const response = await this.getClient().disableCalendarGroup(params.groupId, params.isActive);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1494,7 +1490,7 @@ export class CalendarTools {
    */
   private async getAppointmentNotes(params: MCPGetAppointmentNotesParams): Promise<{ success: boolean; notes: any[]; message: string }> {
     try {
-      const response = await this.ghlClient.getAppointmentNotes(params.appointmentId);
+      const response = await this.getClient().getAppointmentNotes(params.appointmentId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1519,7 +1515,7 @@ export class CalendarTools {
   private async createAppointmentNote(params: MCPCreateAppointmentNoteParams): Promise<{ success: boolean; note: any; message: string }> {
     try {
       const { appointmentId, ...noteData } = params;
-      const response = await this.ghlClient.createAppointmentNote(appointmentId, noteData);
+      const response = await this.getClient().createAppointmentNote(appointmentId, noteData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1542,7 +1538,7 @@ export class CalendarTools {
   private async updateAppointmentNote(params: MCPUpdateAppointmentNoteParams): Promise<{ success: boolean; note: any; message: string }> {
     try {
       const { appointmentId, noteId, ...updateData } = params;
-      const response = await this.ghlClient.updateAppointmentNote(appointmentId, noteId, updateData);
+      const response = await this.getClient().updateAppointmentNote(appointmentId, noteId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1564,7 +1560,7 @@ export class CalendarTools {
    */
   private async deleteAppointmentNote(params: MCPDeleteAppointmentNoteParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteAppointmentNote(params.appointmentId, params.noteId);
+      const response = await this.getClient().deleteAppointmentNote(params.appointmentId, params.noteId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1585,8 +1581,8 @@ export class CalendarTools {
    */
   private async getCalendarResourcesEquipments(params: MCPGetCalendarResourcesParams): Promise<{ success: boolean; resources: any[]; message: string }> {
     try {
-      const locationId = params.locationId || this.ghlClient.getConfig().locationId;
-      const response = await this.ghlClient.getCalendarResources('equipments', params.limit, params.skip, locationId);
+      const locationId = params.locationId || "";
+      const response = await this.getClient().getCalendarResources('equipments', params.limit, params.skip, locationId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1612,9 +1608,9 @@ export class CalendarTools {
     try {
       const resourceData = {
         ...params,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
-      const response = await this.ghlClient.createCalendarResource('equipments', resourceData);
+      const response = await this.getClient().createCalendarResource('equipments', resourceData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1636,7 +1632,7 @@ export class CalendarTools {
    */
   private async getCalendarResourceEquipment(params: MCPGetCalendarResourceParams): Promise<{ success: boolean; resource: any; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendarResource('equipments', params.resourceId);
+      const response = await this.getClient().getCalendarResource('equipments', params.resourceId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1659,7 +1655,7 @@ export class CalendarTools {
   private async updateCalendarResourceEquipment(params: MCPUpdateCalendarResourceParams): Promise<{ success: boolean; resource: any; message: string }> {
     try {
       const { resourceId, ...updateData } = params;
-      const response = await this.ghlClient.updateCalendarResource('equipments', resourceId, updateData);
+      const response = await this.getClient().updateCalendarResource('equipments', resourceId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1681,7 +1677,7 @@ export class CalendarTools {
    */
   private async deleteCalendarResourceEquipment(params: MCPDeleteCalendarResourceParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteCalendarResource('equipments', params.resourceId);
+      const response = await this.getClient().deleteCalendarResource('equipments', params.resourceId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1702,8 +1698,8 @@ export class CalendarTools {
    */
   private async getCalendarResourcesRooms(params: MCPGetCalendarResourcesParams): Promise<{ success: boolean; resources: any[]; message: string }> {
     try {
-      const locationId = params.locationId || this.ghlClient.getConfig().locationId;
-      const response = await this.ghlClient.getCalendarResources('rooms', params.limit, params.skip, locationId);
+      const locationId = params.locationId || "";
+      const response = await this.getClient().getCalendarResources('rooms', params.limit, params.skip, locationId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1729,9 +1725,9 @@ export class CalendarTools {
     try {
       const resourceData = {
         ...params,
-        locationId: params.locationId || this.ghlClient.getConfig().locationId
+        locationId: params.locationId || ""
       };
-      const response = await this.ghlClient.createCalendarResource('rooms', resourceData);
+      const response = await this.getClient().createCalendarResource('rooms', resourceData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1753,7 +1749,7 @@ export class CalendarTools {
    */
   private async getCalendarResourceRoom(params: MCPGetCalendarResourceParams): Promise<{ success: boolean; resource: any; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendarResource('rooms', params.resourceId);
+      const response = await this.getClient().getCalendarResource('rooms', params.resourceId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1776,7 +1772,7 @@ export class CalendarTools {
   private async updateCalendarResourceRoom(params: MCPUpdateCalendarResourceParams): Promise<{ success: boolean; resource: any; message: string }> {
     try {
       const { resourceId, ...updateData } = params;
-      const response = await this.ghlClient.updateCalendarResource('rooms', resourceId, updateData);
+      const response = await this.getClient().updateCalendarResource('rooms', resourceId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1798,7 +1794,7 @@ export class CalendarTools {
    */
   private async deleteCalendarResourceRoom(params: MCPDeleteCalendarResourceParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteCalendarResource('rooms', params.resourceId);
+      const response = await this.getClient().deleteCalendarResource('rooms', params.resourceId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1819,7 +1815,7 @@ export class CalendarTools {
    */
   private async getCalendarNotifications(params: MCPGetCalendarNotificationsParams): Promise<{ success: boolean; notifications: any[]; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendarNotifications(params.calendarId);
+      const response = await this.getClient().getCalendarNotifications(params.calendarId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1844,7 +1840,7 @@ export class CalendarTools {
   private async createCalendarNotifications(params: MCPCreateCalendarNotificationParams): Promise<{ success: boolean; message: string }> {
     try {
       const { calendarId, notifications } = params;
-      const response = await this.ghlClient.createCalendarNotifications(calendarId, notifications);
+      const response = await this.getClient().createCalendarNotifications(calendarId, notifications);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1865,7 +1861,7 @@ export class CalendarTools {
    */
   private async getCalendarNotification(params: MCPGetCalendarNotificationParams): Promise<{ success: boolean; notification: any; message: string }> {
     try {
-      const response = await this.ghlClient.getCalendarNotification(params.calendarId, params.notificationId);
+      const response = await this.getClient().getCalendarNotification(params.calendarId, params.notificationId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1888,7 +1884,7 @@ export class CalendarTools {
   private async updateCalendarNotification(params: MCPUpdateCalendarNotificationParams): Promise<{ success: boolean; message: string }> {
     try {
       const { calendarId, notificationId, ...updateData } = params;
-      const response = await this.ghlClient.updateCalendarNotification(calendarId, notificationId, updateData);
+      const response = await this.getClient().updateCalendarNotification(calendarId, notificationId, updateData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1909,7 +1905,7 @@ export class CalendarTools {
    */
   private async deleteCalendarNotification(params: MCPDeleteCalendarNotificationParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteCalendarNotification(params.calendarId, params.notificationId);
+      const response = await this.getClient().deleteCalendarNotification(params.calendarId, params.notificationId);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -1931,7 +1927,6 @@ export class CalendarTools {
   private async getBlockedSlots(params: MCPGetBlockedSlotsParams): Promise<{ success: boolean; slots: any[]; message: string }> {
     try {
       const eventParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         startTime: params.startTime,
         endTime: params.endTime,
         userId: params.userId,
@@ -1939,7 +1934,7 @@ export class CalendarTools {
         groupId: params.groupId
       };
 
-      const response = await this.ghlClient.getBlockedSlots(eventParams);
+      const response = await this.getClient().getBlockedSlots(eventParams);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';

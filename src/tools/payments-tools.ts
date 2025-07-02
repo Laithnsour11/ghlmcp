@@ -1,4 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   CreateWhiteLabelIntegrationProviderDto,
@@ -28,8 +29,10 @@ import {
   DisconnectCustomProviderResponse
 } from '../types/ghl-types.js';
 
-export class PaymentsTools {
-  constructor(private client: GHLApiClient) {}
+export class PaymentsTools extends BaseTool {
+  constructor(client?: GHLApiClient) {
+    super(client);
+  }
 
   getTools(): Tool[] {
     return [
@@ -861,74 +864,74 @@ export class PaymentsTools {
     switch (name) {
       // Integration Provider Handlers
       case 'create_whitelabel_integration_provider':
-        return this.client.createWhiteLabelIntegrationProvider(args as CreateWhiteLabelIntegrationProviderDto);
+        return this.getClient().createWhiteLabelIntegrationProvider(args as CreateWhiteLabelIntegrationProviderDto);
 
       case 'list_whitelabel_integration_providers':
-        return this.client.listWhiteLabelIntegrationProviders(args);
+        return this.getClient().listWhiteLabelIntegrationProviders(args);
 
       // Order Handlers
       case 'list_orders':
-        return this.client.listOrders(args);
+        return this.getClient().listOrders(args);
 
       case 'get_order_by_id':
-        return this.client.getOrderById(args.orderId, args);
+        return this.getClient().getOrderById(args.orderId, args);
 
       // Order Fulfillment Handlers
       case 'create_order_fulfillment':
         const { orderId, ...fulfillmentData } = args;
-        return this.client.createOrderFulfillment(orderId, fulfillmentData as CreateFulfillmentDto);
+        return this.getClient().createOrderFulfillment(orderId, fulfillmentData as CreateFulfillmentDto);
 
       case 'list_order_fulfillments':
-        return this.client.listOrderFulfillments(args.orderId, args);
+        return this.getClient().listOrderFulfillments(args.orderId, args);
 
       // Transaction Handlers
       case 'list_transactions':
-        return this.client.listTransactions(args);
+        return this.getClient().listTransactions(args);
 
       case 'get_transaction_by_id':
-        return this.client.getTransactionById(args.transactionId, args);
+        return this.getClient().getTransactionById(args.transactionId, args);
 
       // Subscription Handlers
       case 'list_subscriptions':
-        return this.client.listSubscriptions(args);
+        return this.getClient().listSubscriptions(args);
 
       case 'get_subscription_by_id':
-        return this.client.getSubscriptionById(args.subscriptionId, args);
+        return this.getClient().getSubscriptionById(args.subscriptionId, args);
 
       // Coupon Handlers
       case 'list_coupons':
-        return this.client.listCoupons(args);
+        return this.getClient().listCoupons(args);
 
       case 'create_coupon':
-        return this.client.createCoupon(args as CreateCouponParams);
+        return this.getClient().createCoupon(args as CreateCouponParams);
 
       case 'update_coupon':
-        return this.client.updateCoupon(args as UpdateCouponParams);
+        return this.getClient().updateCoupon(args as UpdateCouponParams);
 
       case 'delete_coupon':
-        return this.client.deleteCoupon(args as DeleteCouponParams);
+        return this.getClient().deleteCoupon(args as DeleteCouponParams);
 
       case 'get_coupon':
-        return this.client.getCoupon(args);
+        return this.getClient().getCoupon(args);
 
       // Custom Provider Handlers
       case 'create_custom_provider_integration':
         const { locationId: createLocationId, ...createProviderData } = args;
-        return this.client.createCustomProviderIntegration(createLocationId, createProviderData as CreateCustomProviderDto);
+        return this.getClient().createCustomProviderIntegration(createLocationId, createProviderData as CreateCustomProviderDto);
 
       case 'delete_custom_provider_integration':
-        return this.client.deleteCustomProviderIntegration(args.locationId);
+        return this.getClient().deleteCustomProviderIntegration(args.locationId);
 
       case 'get_custom_provider_config':
-        return this.client.getCustomProviderConfig(args.locationId);
+        return this.getClient().getCustomProviderConfig(args.locationId);
 
       case 'create_custom_provider_config':
         const { locationId: configLocationId, ...configData } = args;
-        return this.client.createCustomProviderConfig(configLocationId, configData as ConnectCustomProviderConfigDto);
+        return this.getClient().createCustomProviderConfig(configLocationId, configData as ConnectCustomProviderConfigDto);
 
       case 'disconnect_custom_provider_config':
         const { locationId: disconnectLocationId, ...disconnectData } = args;
-        return this.client.disconnectCustomProviderConfig(disconnectLocationId, disconnectData as DeleteCustomProviderConfigDto);
+        return this.getClient().disconnectCustomProviderConfig(disconnectLocationId, disconnectData as DeleteCustomProviderConfigDto);
 
       default:
         throw new Error(`Unknown tool: ${name}`);

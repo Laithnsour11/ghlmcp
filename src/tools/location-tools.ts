@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPSearchLocationsParams,
@@ -41,8 +42,8 @@ import {
  * Location Tools Class
  * Implements MCP tools for location and sub-account management
  */
-export class LocationTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class LocationTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all location tool definitions for MCP server
@@ -749,7 +750,7 @@ export class LocationTools {
 
   private async searchLocations(params: MCPSearchLocationsParams): Promise<{ success: boolean; locations: GHLLocation[]; message: string }> {
     try {
-      const response = await this.ghlClient.searchLocations(params);
+      const response = await this.getClient().searchLocations(params);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -767,7 +768,7 @@ export class LocationTools {
 
   private async getLocation(params: MCPGetLocationParams): Promise<{ success: boolean; location: GHLLocationDetailed; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationById(params.locationId);
+      const response = await this.getClient().getLocationById(params.locationId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -784,7 +785,7 @@ export class LocationTools {
 
   private async getLocationTags(params: MCPGetLocationTagsParams): Promise<{ success: boolean; tags: GHLLocationTag[]; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationTags(params.locationId);
+      const response = await this.getClient().getLocationTags(params.locationId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -802,7 +803,7 @@ export class LocationTools {
 
   private async createLocation(params: MCPCreateLocationParams): Promise<{ success: boolean; location: GHLLocationDetailed; message: string }> {
     try {
-      const response = await this.ghlClient.createLocation(params);
+      const response = await this.getClient().createLocation(params);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -820,7 +821,7 @@ export class LocationTools {
   private async updateLocation(params: MCPUpdateLocationParams): Promise<{ success: boolean; location: GHLLocationDetailed; message: string }> {
     try {
       const { locationId, ...updateData } = params;
-      const response = await this.ghlClient.updateLocation(locationId, updateData);
+      const response = await this.getClient().updateLocation(locationId, updateData);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -837,7 +838,7 @@ export class LocationTools {
 
   private async deleteLocation(params: MCPDeleteLocationParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteLocation(params.locationId, params.deleteTwilioAccount);
+      const response = await this.getClient().deleteLocation(params.locationId, params.deleteTwilioAccount);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -853,7 +854,7 @@ export class LocationTools {
 
   private async createLocationTag(params: MCPCreateLocationTagParams): Promise<{ success: boolean; tag: GHLLocationTag; message: string }> {
     try {
-      const response = await this.ghlClient.createLocationTag(params.locationId, { name: params.name });
+      const response = await this.getClient().createLocationTag(params.locationId, { name: params.name });
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -870,7 +871,7 @@ export class LocationTools {
 
   private async getLocationTag(params: MCPGetLocationTagParams): Promise<{ success: boolean; tag: GHLLocationTag; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationTag(params.locationId, params.tagId);
+      const response = await this.getClient().getLocationTag(params.locationId, params.tagId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -887,7 +888,7 @@ export class LocationTools {
 
   private async updateLocationTag(params: MCPUpdateLocationTagParams): Promise<{ success: boolean; tag: GHLLocationTag; message: string }> {
     try {
-      const response = await this.ghlClient.updateLocationTag(params.locationId, params.tagId, { name: params.name });
+      const response = await this.getClient().updateLocationTag(params.locationId, params.tagId, { name: params.name });
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -904,7 +905,7 @@ export class LocationTools {
 
   private async deleteLocationTag(params: MCPDeleteLocationTagParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteLocationTag(params.locationId, params.tagId);
+      const response = await this.getClient().deleteLocationTag(params.locationId, params.tagId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -921,7 +922,7 @@ export class LocationTools {
   private async searchLocationTasks(params: MCPSearchLocationTasksParams): Promise<{ success: boolean; tasks: any[]; message: string }> {
     try {
       const { locationId, ...searchParams } = params;
-      const response = await this.ghlClient.searchLocationTasks(locationId, searchParams);
+      const response = await this.getClient().searchLocationTasks(locationId, searchParams);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -939,7 +940,7 @@ export class LocationTools {
 
   private async getLocationCustomFields(params: MCPGetCustomFieldsParams): Promise<{ success: boolean; customFields: GHLLocationCustomField[]; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationCustomFields(params.locationId, params.model);
+      const response = await this.getClient().getLocationCustomFields(params.locationId, params.model);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -958,7 +959,7 @@ export class LocationTools {
   private async createLocationCustomField(params: MCPCreateCustomFieldParams): Promise<{ success: boolean; customField: GHLLocationCustomField; message: string }> {
     try {
       const { locationId, ...fieldData } = params;
-      const response = await this.ghlClient.createLocationCustomField(locationId, fieldData);
+      const response = await this.getClient().createLocationCustomField(locationId, fieldData);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -975,7 +976,7 @@ export class LocationTools {
 
   private async getLocationCustomField(params: MCPGetCustomFieldParams): Promise<{ success: boolean; customField: GHLLocationCustomField; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationCustomField(params.locationId, params.customFieldId);
+      const response = await this.getClient().getLocationCustomField(params.locationId, params.customFieldId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -993,7 +994,7 @@ export class LocationTools {
   private async updateLocationCustomField(params: MCPUpdateCustomFieldParams): Promise<{ success: boolean; customField: GHLLocationCustomField; message: string }> {
     try {
       const { locationId, customFieldId, ...fieldData } = params;
-      const response = await this.ghlClient.updateLocationCustomField(locationId, customFieldId, fieldData);
+      const response = await this.getClient().updateLocationCustomField(locationId, customFieldId, fieldData);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1010,7 +1011,7 @@ export class LocationTools {
 
   private async deleteLocationCustomField(params: MCPDeleteCustomFieldParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteLocationCustomField(params.locationId, params.customFieldId);
+      const response = await this.getClient().deleteLocationCustomField(params.locationId, params.customFieldId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1026,7 +1027,7 @@ export class LocationTools {
 
   private async getLocationCustomValues(params: MCPGetCustomValuesParams): Promise<{ success: boolean; customValues: GHLLocationCustomValue[]; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationCustomValues(params.locationId);
+      const response = await this.getClient().getLocationCustomValues(params.locationId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1045,7 +1046,7 @@ export class LocationTools {
   private async createLocationCustomValue(params: MCPCreateCustomValueParams): Promise<{ success: boolean; customValue: GHLLocationCustomValue; message: string }> {
     try {
       const { locationId, ...valueData } = params;
-      const response = await this.ghlClient.createLocationCustomValue(locationId, valueData);
+      const response = await this.getClient().createLocationCustomValue(locationId, valueData);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1062,7 +1063,7 @@ export class LocationTools {
 
   private async getLocationCustomValue(params: MCPGetCustomValueParams): Promise<{ success: boolean; customValue: GHLLocationCustomValue; message: string }> {
     try {
-      const response = await this.ghlClient.getLocationCustomValue(params.locationId, params.customValueId);
+      const response = await this.getClient().getLocationCustomValue(params.locationId, params.customValueId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1080,7 +1081,7 @@ export class LocationTools {
   private async updateLocationCustomValue(params: MCPUpdateCustomValueParams): Promise<{ success: boolean; customValue: GHLLocationCustomValue; message: string }> {
     try {
       const { locationId, customValueId, ...valueData } = params;
-      const response = await this.ghlClient.updateLocationCustomValue(locationId, customValueId, valueData);
+      const response = await this.getClient().updateLocationCustomValue(locationId, customValueId, valueData);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1097,7 +1098,7 @@ export class LocationTools {
 
   private async deleteLocationCustomValue(params: MCPDeleteCustomValueParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteLocationCustomValue(params.locationId, params.customValueId);
+      const response = await this.getClient().deleteLocationCustomValue(params.locationId, params.customValueId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1114,7 +1115,7 @@ export class LocationTools {
   private async getLocationTemplates(params: MCPGetLocationTemplatesParams): Promise<{ success: boolean; templates: any[]; totalCount: number; message: string }> {
     try {
       const { locationId, ...templateParams } = params;
-      const response = await this.ghlClient.getLocationTemplates(locationId, templateParams);
+      const response = await this.getClient().getLocationTemplates(locationId, templateParams);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1134,7 +1135,7 @@ export class LocationTools {
 
   private async deleteLocationTemplate(params: MCPDeleteLocationTemplateParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteLocationTemplate(params.locationId, params.templateId);
+      const response = await this.getClient().deleteLocationTemplate(params.locationId, params.templateId);
       if (!response.success) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);
@@ -1150,7 +1151,7 @@ export class LocationTools {
 
   private async getTimezones(params: MCPGetTimezonesParams): Promise<{ success: boolean; timezones: string[]; message: string }> {
     try {
-      const response = await this.ghlClient.getTimezones(params.locationId);
+      const response = await this.getClient().getTimezones(params.locationId);
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
         throw new Error(`API request failed: ${errorMsg}`);

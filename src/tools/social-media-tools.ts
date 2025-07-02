@@ -1,4 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPSearchPostsParams,
@@ -25,8 +26,8 @@ import {
   MCPAttachOAuthAccountParams
 } from '../types/ghl-types.js';
 
-export class SocialMediaTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class SocialMediaTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   getTools(): Tool[] {
     return [
@@ -373,7 +374,7 @@ export class SocialMediaTools {
 
   // Implementation methods
   private async searchSocialPosts(params: MCPSearchPostsParams) {
-    const response = await this.ghlClient.searchSocialPosts({
+    const response = await this.getClient().searchSocialPosts({
       type: params.type,
       accounts: params.accounts,
       skip: params.skip?.toString(),
@@ -393,7 +394,7 @@ export class SocialMediaTools {
   }
 
   private async createSocialPost(params: MCPCreatePostParams) {
-    const response = await this.ghlClient.createSocialPost({
+    const response = await this.getClient().createSocialPost({
       accountIds: params.accountIds,
       summary: params.summary,
       media: params.media,
@@ -414,7 +415,7 @@ export class SocialMediaTools {
   }
 
   private async getSocialPost(params: MCPGetPostParams) {
-    const response = await this.ghlClient.getSocialPost(params.postId);
+    const response = await this.getClient().getSocialPost(params.postId);
     
     return {
       success: true,
@@ -425,7 +426,7 @@ export class SocialMediaTools {
 
   private async updateSocialPost(params: MCPUpdatePostParams) {
     const { postId, ...updateData } = params;
-    const response = await this.ghlClient.updateSocialPost(postId, updateData);
+    const response = await this.getClient().updateSocialPost(postId, updateData);
     
     return {
       success: true,
@@ -434,7 +435,7 @@ export class SocialMediaTools {
   }
 
   private async deleteSocialPost(params: MCPDeletePostParams) {
-    const response = await this.ghlClient.deleteSocialPost(params.postId);
+    const response = await this.getClient().deleteSocialPost(params.postId);
     
     return {
       success: true,
@@ -443,7 +444,7 @@ export class SocialMediaTools {
   }
 
   private async bulkDeleteSocialPosts(params: MCPBulkDeletePostsParams) {
-    const response = await this.ghlClient.bulkDeleteSocialPosts({ postIds: params.postIds });
+    const response = await this.getClient().bulkDeleteSocialPosts({ postIds: params.postIds });
     
     return {
       success: true,
@@ -453,7 +454,7 @@ export class SocialMediaTools {
   }
 
   private async getSocialAccounts(params: MCPGetAccountsParams) {
-    const response = await this.ghlClient.getSocialAccounts();
+    const response = await this.getClient().getSocialAccounts();
     
     return {
       success: true,
@@ -464,7 +465,7 @@ export class SocialMediaTools {
   }
 
   private async deleteSocialAccount(params: MCPDeleteAccountParams) {
-    const response = await this.ghlClient.deleteSocialAccount(
+    const response = await this.getClient().deleteSocialAccount(
       params.accountId,
       params.companyId,
       params.userId
@@ -477,7 +478,7 @@ export class SocialMediaTools {
   }
 
   private async getSocialCategories(params: MCPGetCategoriesParams) {
-    const response = await this.ghlClient.getSocialCategories(
+    const response = await this.getClient().getSocialCategories(
       params.searchText,
       params.limit,
       params.skip
@@ -492,7 +493,7 @@ export class SocialMediaTools {
   }
 
   private async getSocialCategory(params: MCPGetCategoryParams) {
-    const response = await this.ghlClient.getSocialCategory(params.categoryId);
+    const response = await this.getClient().getSocialCategory(params.categoryId);
     
     return {
       success: true,
@@ -502,7 +503,7 @@ export class SocialMediaTools {
   }
 
   private async getSocialTags(params: MCPGetTagsParams) {
-    const response = await this.ghlClient.getSocialTags(
+    const response = await this.getClient().getSocialTags(
       params.searchText,
       params.limit,
       params.skip
@@ -517,7 +518,7 @@ export class SocialMediaTools {
   }
 
   private async getSocialTagsByIds(params: MCPGetTagsByIdsParams) {
-    const response = await this.ghlClient.getSocialTagsByIds({ tagIds: params.tagIds });
+    const response = await this.getClient().getSocialTagsByIds({ tagIds: params.tagIds });
     
     return {
       success: true,
@@ -528,7 +529,7 @@ export class SocialMediaTools {
   }
 
   private async startSocialOAuth(params: MCPStartOAuthParams) {
-    const response = await this.ghlClient.startSocialOAuth(
+    const response = await this.getClient().startSocialOAuth(
       params.platform,
       params.userId,
       params.page,
@@ -547,25 +548,25 @@ export class SocialMediaTools {
     
     switch (params.platform) {
       case 'google':
-        response = await this.ghlClient.getGoogleBusinessLocations(params.accountId);
+        response = await this.getClient().getGoogleBusinessLocations(params.accountId);
         break;
       case 'facebook':
-        response = await this.ghlClient.getFacebookPages(params.accountId);
+        response = await this.getClient().getFacebookPages(params.accountId);
         break;
       case 'instagram':
-        response = await this.ghlClient.getInstagramAccounts(params.accountId);
+        response = await this.getClient().getInstagramAccounts(params.accountId);
         break;
       case 'linkedin':
-        response = await this.ghlClient.getLinkedInAccounts(params.accountId);
+        response = await this.getClient().getLinkedInAccounts(params.accountId);
         break;
       case 'twitter':
-        response = await this.ghlClient.getTwitterProfile(params.accountId);
+        response = await this.getClient().getTwitterProfile(params.accountId);
         break;
       case 'tiktok':
-        response = await this.ghlClient.getTikTokProfile(params.accountId);
+        response = await this.getClient().getTikTokProfile(params.accountId);
         break;
       case 'tiktok-business':
-        response = await this.ghlClient.getTikTokBusinessProfile(params.accountId);
+        response = await this.getClient().getTikTokBusinessProfile(params.accountId);
         break;
       default:
         throw new Error(`Unsupported platform: ${params.platform}`);

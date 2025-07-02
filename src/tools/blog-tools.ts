@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPCreateBlogPostParams,
@@ -24,8 +25,8 @@ import {
  * Blog Tools Class
  * Implements MCP tools for blog management
  */
-export class BlogTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class BlogTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all blog tool definitions for MCP server
@@ -341,7 +342,6 @@ export class BlogTools {
 
       const blogPostData = {
         title: params.title,
-        locationId: this.ghlClient.getConfig().locationId,
         blogId: params.blogId,
         imageUrl: params.imageUrl,
         description: params.description,
@@ -356,7 +356,7 @@ export class BlogTools {
         publishedAt: publishedAt
       };
 
-      const result = await this.ghlClient.createBlogPost(blogPostData);
+      const result = await this.getClient().createBlogPost(blogPostData);
       
       if (result.success && result.data) {
         return {
@@ -378,7 +378,6 @@ export class BlogTools {
   private async updateBlogPost(params: MCPUpdateBlogPostParams): Promise<{ success: boolean; blogPost: GHLBlogPost; message: string }> {
     try {
       const updateData: any = {
-        locationId: this.ghlClient.getConfig().locationId,
         blogId: params.blogId
       };
 
@@ -396,7 +395,7 @@ export class BlogTools {
       if (params.canonicalLink) updateData.canonicalLink = params.canonicalLink;
       if (params.publishedAt) updateData.publishedAt = params.publishedAt;
 
-      const result = await this.ghlClient.updateBlogPost(params.postId, updateData);
+      const result = await this.getClient().updateBlogPost(params.postId, updateData);
       
       if (result.success && result.data) {
         return {
@@ -418,7 +417,6 @@ export class BlogTools {
   private async getBlogPosts(params: MCPGetBlogPostsParams): Promise<{ success: boolean; posts: GHLBlogPost[]; count: number; message: string }> {
     try {
       const searchParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         blogId: params.blogId,
         limit: params.limit || 10,
         offset: params.offset || 0,
@@ -426,7 +424,7 @@ export class BlogTools {
         status: params.status
       };
 
-      const result = await this.ghlClient.getBlogPosts(searchParams);
+      const result = await this.getClient().getBlogPosts(searchParams);
       
       if (result.success && result.data) {
         const posts = result.data.blogs || [];
@@ -450,13 +448,12 @@ export class BlogTools {
   private async getBlogSites(params: MCPGetBlogSitesParams): Promise<{ success: boolean; sites: GHLBlogSite[]; count: number; message: string }> {
     try {
       const searchParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         skip: params.skip || 0,
         limit: params.limit || 10,
         searchTerm: params.searchTerm
       };
 
-      const result = await this.ghlClient.getBlogSites(searchParams);
+      const result = await this.getClient().getBlogSites(searchParams);
       
       if (result.success && result.data) {
         const sites = result.data.data || [];
@@ -480,12 +477,11 @@ export class BlogTools {
   private async getBlogAuthors(params: MCPGetBlogAuthorsParams): Promise<{ success: boolean; authors: GHLBlogAuthor[]; count: number; message: string }> {
     try {
       const searchParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         limit: params.limit || 10,
         offset: params.offset || 0
       };
 
-      const result = await this.ghlClient.getBlogAuthors(searchParams);
+      const result = await this.getClient().getBlogAuthors(searchParams);
       
       if (result.success && result.data) {
         const authors = result.data.authors || [];
@@ -509,12 +505,11 @@ export class BlogTools {
   private async getBlogCategories(params: MCPGetBlogCategoriesParams): Promise<{ success: boolean; categories: GHLBlogCategory[]; count: number; message: string }> {
     try {
       const searchParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         limit: params.limit || 10,
         offset: params.offset || 0
       };
 
-      const result = await this.ghlClient.getBlogCategories(searchParams);
+      const result = await this.getClient().getBlogCategories(searchParams);
       
       if (result.success && result.data) {
         const categories = result.data.categories || [];
@@ -538,12 +533,11 @@ export class BlogTools {
   private async checkUrlSlug(params: MCPCheckUrlSlugParams): Promise<{ success: boolean; urlSlug: string; exists: boolean; available: boolean; message: string }> {
     try {
       const checkParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         urlSlug: params.urlSlug,
         postId: params.postId
       };
 
-      const result = await this.ghlClient.checkUrlSlugExists(checkParams);
+      const result = await this.getClient().checkUrlSlugExists(checkParams);
       
       if (result.success && result.data !== undefined) {
         const exists = result.data.exists;

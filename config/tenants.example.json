@@ -1,0 +1,236 @@
+{
+  "tenants": [
+    {
+      "tenantId": "voice-ai-agent-1",
+      "name": "Voice AI Agent - Customer Support",
+      "description": "Voice AI agent for handling customer support calls",
+      "apiKey": "ghl_api_key_for_voice_agent",
+      "locationId": "location_id_for_voice_agent",
+      "baseUrl": "https://services.leadconnectorhq.com",
+      "isActive": true,
+      "features": {
+        "voiceAI": true,
+        "sms": true,
+        "appointments": true,
+        "contacts": true,
+        "conversations": true
+      },
+      "config": {
+        "voiceProvider": "twilio",
+        "voiceSettings": {
+          "voice": "en-US-Neural2-F",
+          "language": "en-US",
+          "speed": 1.0,
+          "pitch": 0.0
+        },
+        "webhooks": {
+          "onCallStart": "https://your-domain.com/webhooks/voice/start",
+          "onCallEnd": "https://your-domain.com/webhooks/voice/end",
+          "onTranscription": "https://your-domain.com/webhooks/voice/transcription"
+        },
+        "prompts": {
+          "greeting": "Hello! Thank you for calling. How can I assist you today?",
+          "hold": "Please hold while I look that up for you.",
+          "transfer": "I'll transfer you to a specialist who can better help you."
+        }
+      },
+      "rateLimits": {
+        "maxRequestsPerMinute": 60,
+        "maxContactsPerDay": 1000,
+        "maxSMSPerDay": 500
+      },
+      "metadata": {
+        "createdBy": "admin",
+        "department": "Customer Support",
+        "costCenter": "CS-001"
+      }
+    },
+    {
+      "tenantId": "sms-appointment-setter",
+      "name": "SMS Appointment Setter Bot",
+      "description": "Automated SMS bot for scheduling appointments",
+      "apiKey": "ghl_api_key_for_sms_bot",
+      "locationId": "location_id_for_sms_bot",
+      "baseUrl": "https://services.leadconnectorhq.com",
+      "isActive": true,
+      "features": {
+        "voiceAI": false,
+        "sms": true,
+        "appointments": true,
+        "contacts": true,
+        "conversations": true,
+        "calendar": true
+      },
+      "config": {
+        "smsProvider": "gohighlevel",
+        "smsSettings": {
+          "fromNumber": "+1234567890",
+          "enableAutoReply": true,
+          "businessHours": {
+            "monday": { "start": "09:00", "end": "17:00" },
+            "tuesday": { "start": "09:00", "end": "17:00" },
+            "wednesday": { "start": "09:00", "end": "17:00" },
+            "thursday": { "start": "09:00", "end": "17:00" },
+            "friday": { "start": "09:00", "end": "17:00" },
+            "saturday": { "start": "10:00", "end": "14:00" },
+            "sunday": { "closed": true }
+          }
+        },
+        "appointmentSettings": {
+          "defaultDuration": 30,
+          "bufferTime": 15,
+          "maxAdvanceBooking": 30,
+          "confirmationRequired": true,
+          "reminderHours": [24, 2]
+        },
+        "webhooks": {
+          "onSMSReceived": "https://your-domain.com/webhooks/sms/received",
+          "onAppointmentBooked": "https://your-domain.com/webhooks/appointment/booked",
+          "onAppointmentCancelled": "https://your-domain.com/webhooks/appointment/cancelled"
+        }
+      },
+      "rateLimits": {
+        "maxRequestsPerMinute": 30,
+        "maxSMSPerDay": 1000,
+        "maxAppointmentsPerDay": 50
+      },
+      "metadata": {
+        "createdBy": "admin",
+        "department": "Sales",
+        "costCenter": "SALES-001"
+      }
+    },
+    {
+      "tenantId": "sales-ai-dashboard",
+      "name": "Sales AI Dashboard",
+      "description": "AI-powered sales dashboard and analytics",
+      "apiKey": "ghl_api_key_for_dashboard",
+      "locationId": "location_id_for_dashboard",
+      "baseUrl": "https://services.leadconnectorhq.com",
+      "isActive": true,
+      "features": {
+        "voiceAI": false,
+        "sms": false,
+        "appointments": true,
+        "contacts": true,
+        "opportunities": true,
+        "pipelines": true,
+        "analytics": true,
+        "reports": true
+      },
+      "config": {
+        "dashboardSettings": {
+          "refreshInterval": 300,
+          "defaultView": "pipeline",
+          "enableRealTimeUpdates": true
+        },
+        "analyticsSettings": {
+          "trackConversions": true,
+          "trackRevenue": true,
+          "customMetrics": [
+            {
+              "name": "Lead Score",
+              "field": "customFields.leadScore",
+              "type": "number"
+            },
+            {
+              "name": "Deal Probability",
+              "field": "customFields.dealProbability",
+              "type": "percentage"
+            }
+          ]
+        },
+        "aiSettings": {
+          "enablePredictions": true,
+          "enableAnomalyDetection": true,
+          "enableAutoInsights": true
+        },
+        "webhooks": {
+          "onOpportunityCreated": "https://your-domain.com/webhooks/opportunity/created",
+          "onOpportunityWon": "https://your-domain.com/webhooks/opportunity/won",
+          "onOpportunityLost": "https://your-domain.com/webhooks/opportunity/lost"
+        }
+      },
+      "rateLimits": {
+        "maxRequestsPerMinute": 100,
+        "maxReportsPerDay": 50
+      },
+      "metadata": {
+        "createdBy": "admin",
+        "department": "Sales Management",
+        "costCenter": "SALES-MGT-001"
+      }
+    },
+    {
+      "tenantId": "marketing-automation",
+      "name": "Marketing Automation Suite",
+      "description": "Multi-channel marketing automation platform",
+      "apiKey": "ghl_api_key_for_marketing",
+      "locationId": "location_id_for_marketing",
+      "baseUrl": "https://services.leadconnectorhq.com",
+      "isActive": true,
+      "features": {
+        "voiceAI": false,
+        "sms": true,
+        "email": true,
+        "campaigns": true,
+        "workflows": true,
+        "socialMedia": true,
+        "blogs": true,
+        "surveys": true
+      },
+      "config": {
+        "campaignSettings": {
+          "defaultSender": "marketing@company.com",
+          "trackingEnabled": true,
+          "utmTracking": true
+        },
+        "workflowSettings": {
+          "maxActiveWorkflows": 10,
+          "enableConditionalLogic": true,
+          "enableABTesting": true
+        },
+        "socialMediaSettings": {
+          "platforms": ["facebook", "instagram", "linkedin", "twitter"],
+          "autoSchedule": true,
+          "optimalPostingTimes": true
+        },
+        "webhooks": {
+          "onCampaignSent": "https://your-domain.com/webhooks/campaign/sent",
+          "onEmailOpened": "https://your-domain.com/webhooks/email/opened",
+          "onLinkClicked": "https://your-domain.com/webhooks/link/clicked"
+        }
+      },
+      "rateLimits": {
+        "maxRequestsPerMinute": 60,
+        "maxEmailsPerDay": 10000,
+        "maxSMSPerDay": 5000
+      },
+      "metadata": {
+        "createdBy": "admin",
+        "department": "Marketing",
+        "costCenter": "MKT-001"
+      }
+    }
+  ],
+  "defaultSettings": {
+    "rateLimits": {
+      "maxRequestsPerMinute": 60,
+      "maxContactsPerDay": 1000,
+      "maxSMSPerDay": 500,
+      "maxEmailsPerDay": 1000
+    },
+    "features": {
+      "voiceAI": false,
+      "sms": true,
+      "appointments": true,
+      "contacts": true,
+      "conversations": true
+    },
+    "security": {
+      "requireHTTPS": true,
+      "encryptAPIKeys": true,
+      "auditLogging": true
+    }
+  }
+}

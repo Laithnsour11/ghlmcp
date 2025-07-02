@@ -1,4 +1,5 @@
 import { GHLApiClient } from '../clients/ghl-api-client.js';
+import { BaseTool } from './base-tool.js';
 import {
   MCPGetMediaFilesParams,
   MCPUploadMediaFileParams,
@@ -22,8 +23,8 @@ export interface Tool {
  * MediaTools class for GoHighLevel Media Library API endpoints
  * Handles file management operations including listing, uploading, and deleting files/folders
  */
-export class MediaTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class MediaTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all available Media Library tool definitions
@@ -181,7 +182,7 @@ export class MediaTools {
         sortBy: params.sortBy || 'createdAt',
         sortOrder: params.sortOrder || 'desc',
         altType: params.altType || 'location',
-        altId: params.altId || this.ghlClient.getConfig().locationId,
+        altId: params.altId || "",
         ...(params.offset !== undefined && { offset: params.offset }),
         ...(params.limit !== undefined && { limit: params.limit }),
         ...(params.type && { type: params.type }),
@@ -189,7 +190,7 @@ export class MediaTools {
         ...(params.parentId && { parentId: params.parentId })
       };
 
-      const response = await this.ghlClient.getMediaFiles(requestParams);
+      const response = await this.getClient().getMediaFiles(requestParams);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -224,7 +225,7 @@ export class MediaTools {
 
       const uploadData: GHLUploadMediaFileRequest = {
         altType: params.altType || 'location',
-        altId: params.altId || this.ghlClient.getConfig().locationId,
+        altId: params.altId || "",
         ...(params.hosted !== undefined && { hosted: params.hosted }),
         ...(params.fileUrl && { fileUrl: params.fileUrl }),
         ...(params.file && { file: params.file }),
@@ -232,7 +233,7 @@ export class MediaTools {
         ...(params.parentId && { parentId: params.parentId })
       };
 
-      const response = await this.ghlClient.uploadMediaFile(uploadData);
+      const response = await this.getClient().uploadMediaFile(uploadData);
       
       if (!response.success || !response.data) {
         const errorMsg = response.error?.message || 'Unknown API error';
@@ -258,10 +259,10 @@ export class MediaTools {
       const deleteParams: GHLDeleteMediaRequest = {
         id: params.id,
         altType: params.altType || 'location',
-        altId: params.altId || this.ghlClient.getConfig().locationId
+        altId: params.altId || ""
       };
 
-      const response = await this.ghlClient.deleteMediaFile(deleteParams);
+      const response = await this.getClient().deleteMediaFile(deleteParams);
       
       if (!response.success) {
         const errorMsg = response.error?.message || 'Unknown API error';

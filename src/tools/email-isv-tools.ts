@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPVerifyEmailParams,
@@ -14,8 +15,8 @@ import {
  * Email ISV Tools class
  * Provides email verification capabilities
  */
-export class EmailISVTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class EmailISVTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get tool definitions for all Email ISV operations
@@ -70,7 +71,7 @@ export class EmailISVTools {
     message: string;
   }> {
     try {
-      const result = await this.ghlClient.verifyEmail(params.locationId, {
+      const result = await this.getClient().verifyEmail(params.locationId, {
         type: params.type,
         verify: params.verify
       });

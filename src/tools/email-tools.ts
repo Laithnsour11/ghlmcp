@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPGetEmailCampaignsParams,
@@ -19,8 +20,8 @@ import {
  * Email Tools Class
  * Implements MCP tools for email campaigns and templates
  */
-export class EmailTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class EmailTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all email tool definitions for MCP server
@@ -155,7 +156,7 @@ export class EmailTools {
 
   private async getEmailCampaigns(params: MCPGetEmailCampaignsParams): Promise<{ success: boolean; campaigns: GHLEmailCampaign[]; total: number; message: string }> {
     try {
-      const response = await this.ghlClient.getEmailCampaigns(params);
+      const response = await this.getClient().getEmailCampaigns(params);
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to get email campaigns.');
       }
@@ -172,7 +173,7 @@ export class EmailTools {
 
   private async createEmailTemplate(params: MCPCreateEmailTemplateParams): Promise<{ success: boolean; template: any; message: string }> {
     try {
-      const response = await this.ghlClient.createEmailTemplate(params);
+      const response = await this.getClient().createEmailTemplate(params);
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to create email template.');
       }
@@ -188,7 +189,7 @@ export class EmailTools {
 
   private async getEmailTemplates(params: MCPGetEmailTemplatesParams): Promise<{ success: boolean; templates: GHLEmailTemplate[]; message: string }> {
     try {
-      const response = await this.ghlClient.getEmailTemplates(params);
+      const response = await this.getClient().getEmailTemplates(params);
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to get email templates.');
       }
@@ -204,7 +205,7 @@ export class EmailTools {
 
   private async updateEmailTemplate(params: MCPUpdateEmailTemplateParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.updateEmailTemplate(params);
+      const response = await this.getClient().updateEmailTemplate(params);
       if (!response.success) {
         throw new Error(response.error?.message || 'Failed to update email template.');
       }
@@ -219,7 +220,7 @@ export class EmailTools {
 
   private async deleteEmailTemplate(params: MCPDeleteEmailTemplateParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteEmailTemplate(params);
+      const response = await this.getClient().deleteEmailTemplate(params);
       if (!response.success) {
         throw new Error(response.error?.message || 'Failed to delete email template.');
       }

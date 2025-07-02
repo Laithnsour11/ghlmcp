@@ -4,6 +4,7 @@
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { BaseTool } from './base-tool.js';
 import { GHLApiClient } from '../clients/ghl-api-client.js';
 import {
   MCPSendSMSParams,
@@ -43,8 +44,8 @@ import {
  * Conversation Tools Class
  * Implements MCP tools for messaging and conversation management
  */
-export class ConversationTools {
-  constructor(private ghlClient: GHLApiClient) {}
+export class ConversationTools extends BaseTool {
+  // Constructor removed - using BaseTool
 
   /**
    * Get all conversation tool definitions for MCP server
@@ -650,7 +651,7 @@ export class ConversationTools {
    */
   private async sendSMS(params: MCPSendSMSParams): Promise<{ success: boolean; messageId: string; conversationId: string; message: string }> {
     try {
-      const response = await this.ghlClient.sendSMS(
+      const response = await this.getClient().sendSMS(
         params.contactId,
         params.message,
         params.fromNumber
@@ -674,7 +675,7 @@ export class ConversationTools {
    */
   private async sendEmail(params: MCPSendEmailParams): Promise<{ success: boolean; messageId: string; conversationId: string; emailMessageId?: string; message: string }> {
     try {
-      const response = await this.ghlClient.sendEmail(
+      const response = await this.getClient().sendEmail(
         params.contactId,
         params.subject,
         params.message,
@@ -707,7 +708,6 @@ export class ConversationTools {
   private async searchConversations(params: MCPSearchConversationsParams): Promise<{ success: boolean; conversations: GHLConversation[]; total: number; message: string }> {
     try {
       const searchParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         contactId: params.contactId,
         query: params.query,
         status: params.status || 'all',
@@ -715,7 +715,7 @@ export class ConversationTools {
         assignedTo: params.assignedTo
       };
 
-      const response = await this.ghlClient.searchConversations(searchParams);
+      const response = await this.getClient().searchConversations(searchParams);
       const data = response.data as GHLSearchConversationsResponse;
       
       return {
@@ -735,11 +735,11 @@ export class ConversationTools {
   private async getConversation(params: MCPGetConversationParams): Promise<{ success: boolean; conversation: GHLConversation; messages: GHLMessage[]; hasMoreMessages: boolean; message: string }> {
     try {
       // Get conversation details
-      const conversationResponse = await this.ghlClient.getConversation(params.conversationId);
+      const conversationResponse = await this.getClient().getConversation(params.conversationId);
       const conversation = conversationResponse.data as GHLConversation;
 
       // Get messages
-      const messagesResponse = await this.ghlClient.getConversationMessages(
+      const messagesResponse = await this.getClient().getConversationMessages(
         params.conversationId,
         {
           limit: params.limit || 20,
@@ -765,8 +765,7 @@ export class ConversationTools {
    */
   private async createConversation(params: MCPCreateConversationParams): Promise<{ success: boolean; conversationId: string; message: string }> {
     try {
-      const response = await this.ghlClient.createConversation({
-        locationId: this.ghlClient.getConfig().locationId,
+      const response = await this.getClient().createConversation({
         contactId: params.contactId
       });
 
@@ -788,12 +787,11 @@ export class ConversationTools {
   private async updateConversation(params: MCPUpdateConversationParams): Promise<{ success: boolean; conversation: GHLConversation; message: string }> {
     try {
       const updateData = {
-        locationId: this.ghlClient.getConfig().locationId,
         starred: params.starred,
         unreadCount: params.unreadCount
       };
 
-      const response = await this.ghlClient.updateConversation(params.conversationId, updateData);
+      const response = await this.getClient().updateConversation(params.conversationId, updateData);
       
       return {
         success: true,
@@ -813,14 +811,13 @@ export class ConversationTools {
       const status: 'all' | 'read' | 'unread' | 'starred' | 'recents' = 
         (params.status === 'all' || params.status === 'unread') ? params.status : 'unread';
       const searchParams = {
-        locationId: this.ghlClient.getConfig().locationId,
         limit: params.limit || 10,
         status,
         sortBy: 'last_message_date' as const,
         sort: 'desc' as const
       };
 
-      const response = await this.ghlClient.searchConversations(searchParams);
+      const response = await this.getClient().searchConversations(searchParams);
       const data = response.data as GHLSearchConversationsResponse;
 
       // Enhance with recent message details
@@ -847,7 +844,7 @@ export class ConversationTools {
 
   private async deleteConversation(params: MCPDeleteConversationParams): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await this.ghlClient.deleteConversation(params.conversationId);
+      const response = await this.getClient().deleteConversation(params.conversationId);
       
       return {
         success: true,
@@ -860,7 +857,7 @@ export class ConversationTools {
 
   private async getEmailMessage(params: MCPGetEmailMessageParams): Promise<{ success: boolean; emailMessage: GHLEmailMessage; message: string }> {
     try {
-      const response = await this.ghlClient.getEmailMessage(params.emailMessageId);
+      const response = await this.getClient().getEmailMessage(params.emailMessageId);
       const emailMessage = response.data as GHLEmailMessage;
       
       return {
@@ -875,7 +872,7 @@ export class ConversationTools {
 
   private async getMessage(params: MCPGetMessageParams): Promise<{ success: boolean; messageData: GHLMessage; message: string }> {
     try {
-      const response = await this.ghlClient.getMessage(params.messageId);
+      const response = await this.getClient().getMessage(params.messageId);
       const messageData = response.data as GHLMessage;
       
       return {
@@ -892,11 +889,10 @@ export class ConversationTools {
     try {
       const uploadData = {
         conversationId: params.conversationId,
-        locationId: this.ghlClient.getConfig().locationId,
         attachmentUrls: params.attachmentUrls
       };
 
-      const response = await this.ghlClient.uploadMessageAttachments(uploadData);
+      const response = await this.getClient().uploadMessageAttachments(uploadData);
       const result = response.data as GHLUploadFilesResponse;
       
       return {
@@ -918,7 +914,7 @@ export class ConversationTools {
         recipients: params.recipients
       };
 
-      const response = await this.ghlClient.updateMessageStatus(params.messageId, statusData);
+      const response = await this.getClient().updateMessageStatus(params.messageId, statusData);
       
       return {
         success: true,
@@ -949,7 +945,7 @@ export class ConversationTools {
         call: params.call
       };
 
-      const response = await this.ghlClient.addInboundMessage(messageData);
+      const response = await this.getClient().addInboundMessage(messageData);
       const result = response.data as GHLProcessMessageResponse;
       
       return {
@@ -979,7 +975,7 @@ export class ConversationTools {
         }
       };
 
-      const response = await this.ghlClient.addOutboundCall(callData);
+      const response = await this.getClient().addOutboundCall(callData);
       const result = response.data as GHLProcessMessageResponse;
       
       return {
@@ -995,7 +991,7 @@ export class ConversationTools {
 
   private async getMessageRecording(params: MCPGetMessageRecordingParams): Promise<{ success: boolean; recording: any; contentType: string; message: string }> {
     try {
-      const response = await this.ghlClient.getMessageRecording(params.messageId);
+      const response = await this.getClient().getMessageRecording(params.messageId);
       const recording = response.data as GHLMessageRecordingResponse;
       
       return {
@@ -1011,7 +1007,7 @@ export class ConversationTools {
 
   private async getMessageTranscription(params: MCPGetMessageTranscriptionParams): Promise<{ success: boolean; transcriptions: any[]; message: string }> {
     try {
-      const response = await this.ghlClient.getMessageTranscription(params.messageId);
+      const response = await this.getClient().getMessageTranscription(params.messageId);
       const transcriptionData = response.data as GHLMessageTranscriptionResponse;
       
       return {
@@ -1026,7 +1022,7 @@ export class ConversationTools {
 
   private async downloadTranscription(params: MCPDownloadTranscriptionParams): Promise<{ success: boolean; transcription: string; message: string }> {
     try {
-      const response = await this.ghlClient.downloadMessageTranscription(params.messageId);
+      const response = await this.getClient().downloadMessageTranscription(params.messageId);
       const transcription = response.data as string;
       
       return {
@@ -1041,7 +1037,7 @@ export class ConversationTools {
 
   private async cancelScheduledMessage(params: MCPCancelScheduledMessageParams): Promise<{ success: boolean; status: number; message: string }> {
     try {
-      const response = await this.ghlClient.cancelScheduledMessage(params.messageId);
+      const response = await this.getClient().cancelScheduledMessage(params.messageId);
       const result = response.data as GHLCancelScheduledResponse;
       
       return {
@@ -1056,7 +1052,7 @@ export class ConversationTools {
 
   private async cancelScheduledEmail(params: MCPCancelScheduledEmailParams): Promise<{ success: boolean; status: number; message: string }> {
     try {
-      const response = await this.ghlClient.cancelScheduledEmail(params.emailMessageId);
+      const response = await this.getClient().cancelScheduledEmail(params.emailMessageId);
       const result = response.data as GHLCancelScheduledResponse;
       
       return {
@@ -1072,13 +1068,12 @@ export class ConversationTools {
   private async liveChatTyping(params: MCPLiveChatTypingParams): Promise<{ success: boolean; message: string }> {
     try {
       const typingData = {
-        locationId: this.ghlClient.getConfig().locationId,
         isTyping: params.isTyping,
         visitorId: params.visitorId,
         conversationId: params.conversationId
       };
 
-      const response = await this.ghlClient.liveChatTyping(typingData);
+      const response = await this.getClient().liveChatTyping(typingData);
       const result = response.data as GHLLiveChatTypingResponse;
       
       return {

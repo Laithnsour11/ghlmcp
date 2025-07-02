@@ -17,9 +17,11 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/http-server.ts",
+    "dev:multi": "nodemon --exec ts-node src/http-server-multi-tenant.ts",
     "start": "node dist/http-server.js",
     "start:stdio": "node dist/server.js",
     "start:http": "node dist/http-server.js",
+    "start:multi": "node dist/http-server-multi-tenant.js",
     "vercel-build": "npm run build",
     "prepublishOnly": "npm run build",
     "test": "jest",
@@ -51,6 +53,7 @@
     "axios": "^1.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "glob": "^11.0.3"
   }
 }
